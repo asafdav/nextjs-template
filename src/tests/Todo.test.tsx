@@ -89,7 +89,7 @@ describe('Todo Component with API', () => {
     jest.clearAllMocks();
     // Mock the API responses
     mockTodoService.getTodos.mockResolvedValue(mockTodos);
-    mockTodoService.addTodo.mockImplementation(async (text) => ({
+    mockTodoService.addTodo.mockImplementation(async text => ({
       id: '3',
       text,
       completed: false,
@@ -99,8 +99,8 @@ describe('Todo Component with API', () => {
       ...mockTodos.find(todo => todo.id === id)!,
       ...updates,
     }));
-    mockTodoService.deleteTodo.mockImplementation(async (id) => 
-      mockTodos.find(todo => todo.id === id)!
+    mockTodoService.deleteTodo.mockImplementation(
+      async id => mockTodos.find(todo => todo.id === id)!
     );
   });
 
@@ -111,10 +111,10 @@ describe('Todo Component with API', () => {
     );
 
     render(<Todo />);
-    
+
     // Check if loading indicator is shown
     expect(screen.getByRole('status')).toBeInTheDocument();
-    
+
     // Wait for the loading to complete
     await waitFor(() => {
       expect(screen.queryByRole('status')).not.toBeInTheDocument();
@@ -123,7 +123,7 @@ describe('Todo Component with API', () => {
 
   it('fetches and displays todos from the API', async () => {
     render(<Todo />);
-    
+
     // Wait for the todos to be loaded
     await waitFor(() => {
       expect(mockTodoService.getTodos).toHaveBeenCalledTimes(1);
@@ -135,9 +135,9 @@ describe('Todo Component with API', () => {
   it('shows error message when API fetch fails', async () => {
     // Mock API error
     mockTodoService.getTodos.mockRejectedValue(new Error('API Error'));
-    
+
     render(<Todo />);
-    
+
     // Wait for the error message to be displayed
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -147,18 +147,18 @@ describe('Todo Component with API', () => {
 
   it('adds a new todo via the API', async () => {
     render(<Todo />);
-    
+
     // Wait for the todos to be loaded
     await waitFor(() => {
       expect(screen.getByTestId('todo-list')).toBeInTheDocument();
     });
-    
+
     // Add a new todo
     const addButton = screen.getByTestId('mock-add-button');
     await act(async () => {
       fireEvent.click(addButton);
     });
-    
+
     // Check if the API was called and the new todo was added
     await waitFor(() => {
       expect(mockTodoService.addTodo).toHaveBeenCalledWith('New Todo');
@@ -168,18 +168,18 @@ describe('Todo Component with API', () => {
 
   it('toggles a todo via the API', async () => {
     render(<Todo />);
-    
+
     // Wait for the todos to be loaded
     await waitFor(() => {
       expect(screen.getByTestId('todo-list')).toBeInTheDocument();
     });
-    
+
     // Toggle a todo
     const toggleButton = screen.getByTestId('toggle-1');
     await act(async () => {
       fireEvent.click(toggleButton);
     });
-    
+
     // Check if the API was called with the correct parameters
     await waitFor(() => {
       expect(mockTodoService.updateTodo).toHaveBeenCalledWith('1', { completed: true });
@@ -188,18 +188,18 @@ describe('Todo Component with API', () => {
 
   it('deletes a todo via the API', async () => {
     render(<Todo />);
-    
+
     // Wait for the todos to be loaded
     await waitFor(() => {
       expect(screen.getByTestId('todo-list')).toBeInTheDocument();
     });
-    
+
     // Delete a todo
     const deleteButton = screen.getByTestId('delete-1');
     await act(async () => {
       fireEvent.click(deleteButton);
     });
-    
+
     // Check if the API was called with the correct parameters
     await waitFor(() => {
       expect(mockTodoService.deleteTodo).toHaveBeenCalledWith('1');
@@ -210,20 +210,20 @@ describe('Todo Component with API', () => {
   it('shows error message when adding a todo fails', async () => {
     // Mock API error
     mockTodoService.addTodo.mockRejectedValue(new Error('API Error'));
-    
+
     render(<Todo />);
-    
+
     // Wait for the todos to be loaded
     await waitFor(() => {
       expect(screen.getByTestId('todo-list')).toBeInTheDocument();
     });
-    
+
     // Try to add a new todo
     const addButton = screen.getByTestId('mock-add-button');
     await act(async () => {
       fireEvent.click(addButton);
     });
-    
+
     // Check if the error message is displayed
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();

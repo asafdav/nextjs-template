@@ -17,8 +17,8 @@ jest.mock('@/app/api/todos/store', () => {
     updateTodo: jest.fn(),
     deleteTodo: jest.fn(),
     store: {
-      todos: []
-    }
+      todos: [],
+    },
   };
 });
 
@@ -31,8 +31,8 @@ jest.mock('next/server', () => ({
   NextResponse: {
     json: jest.fn().mockImplementation((data, options) => {
       return { data, status: options?.status || 200 };
-    })
-  }
+    }),
+  },
 }));
 
 // Import NextResponse after mocking
@@ -43,7 +43,7 @@ describe('Todo API Routes', () => {
     id: '1',
     text: 'Test Todo',
     completed: false,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 
   beforeEach(() => {
@@ -70,7 +70,7 @@ describe('Todo API Routes', () => {
       // Setup
       (storeModule.addTodo as jest.Mock).mockReturnValue(mockTodo);
       const mockRequest: MockRequest = {
-        json: jest.fn().mockResolvedValue({ text: 'Test Todo' })
+        json: jest.fn().mockResolvedValue({ text: 'Test Todo' }),
       };
 
       // Execute
@@ -84,7 +84,7 @@ describe('Todo API Routes', () => {
     it('should return 400 if text is missing', async () => {
       // Setup
       const mockRequest: MockRequest = {
-        json: jest.fn().mockResolvedValue({})
+        json: jest.fn().mockResolvedValue({}),
       };
 
       // Execute
@@ -101,7 +101,7 @@ describe('Todo API Routes', () => {
     it('should return 400 if request body is invalid', async () => {
       // Setup
       const mockRequest: MockRequest = {
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
+        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
       };
 
       // Execute
@@ -142,10 +142,7 @@ describe('Todo API Routes', () => {
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('999');
-      expect(NextResponse.json).toHaveBeenCalledWith(
-        { error: 'Todo not found' },
-        { status: 404 }
-      );
+      expect(NextResponse.json).toHaveBeenCalledWith({ error: 'Todo not found' }, { status: 404 });
     });
   });
 
@@ -155,7 +152,7 @@ describe('Todo API Routes', () => {
       const updatedTodo = { ...mockTodo, completed: true };
       (storeModule.updateTodo as jest.Mock).mockReturnValue(updatedTodo);
       const mockRequest: MockRequest = {
-        json: jest.fn().mockResolvedValue({ completed: true })
+        json: jest.fn().mockResolvedValue({ completed: true }),
       };
       const mockParams = { params: { id: '1' } };
 
@@ -171,7 +168,7 @@ describe('Todo API Routes', () => {
       // Setup
       (storeModule.updateTodo as jest.Mock).mockReturnValue(null);
       const mockRequest: MockRequest = {
-        json: jest.fn().mockResolvedValue({ completed: true })
+        json: jest.fn().mockResolvedValue({ completed: true }),
       };
       const mockParams = { params: { id: '999' } };
 
@@ -180,16 +177,13 @@ describe('Todo API Routes', () => {
 
       // Assert
       expect(storeModule.updateTodo).toHaveBeenCalledWith('999', { completed: true });
-      expect(NextResponse.json).toHaveBeenCalledWith(
-        { error: 'Todo not found' },
-        { status: 404 }
-      );
+      expect(NextResponse.json).toHaveBeenCalledWith({ error: 'Todo not found' }, { status: 404 });
     });
 
     it('should return 400 if request body is invalid', async () => {
       // Setup
       const mockRequest: MockRequest = {
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
+        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
       };
       const mockParams = { params: { id: '1' } };
 
@@ -231,10 +225,7 @@ describe('Todo API Routes', () => {
 
       // Assert
       expect(storeModule.deleteTodo).toHaveBeenCalledWith('999');
-      expect(NextResponse.json).toHaveBeenCalledWith(
-        { error: 'Todo not found' },
-        { status: 404 }
-      );
+      expect(NextResponse.json).toHaveBeenCalledWith({ error: 'Todo not found' }, { status: 404 });
     });
   });
-}); 
+});

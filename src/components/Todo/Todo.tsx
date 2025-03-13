@@ -73,7 +73,11 @@ const Todo: React.FC = () => {
     return (
       <div className="w-full max-w-2xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-md">
         <div className="flex justify-center items-center h-40">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" role="status" aria-label="Loading">
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
+            role="status"
+            aria-label="Loading"
+          >
             <span className="sr-only">Loading...</span>
           </div>
         </div>
@@ -86,13 +90,13 @@ const Todo: React.FC = () => {
       <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
         Todo List
       </h2>
-      
+
       {error && (
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md" role="alert">
           {error}
         </div>
       )}
-      
+
       <TodoForm onAdd={addTodo} />
       <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
     </div>

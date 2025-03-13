@@ -66,7 +66,7 @@ describe('Todo Service', () => {
   describe('updateTodo', () => {
     it('should update a todo via the API', async () => {
       const updatedTodo = { ...mockTodo, completed: true };
-      
+
       // Mock the fetch response
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
@@ -102,4 +102,4 @@ describe('Todo Service', () => {
       expect(todo).toEqual(mockTodo);
     });
   });
-}); 
+});

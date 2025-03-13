@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getTodoById, updateTodo, deleteTodo } from '../store';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id;
   const todo = getTodoById(id);
 
@@ -15,14 +12,11 @@ export async function GET(
   return NextResponse.json(todo);
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
     const body = await request.json();
-    
+
     const updatedTodo = updateTodo(id, {
       ...(body.text && { text: body.text }),
       ...(body.completed !== undefined && { completed: !!body.completed }),
@@ -34,17 +28,11 @@ export async function PUT(
 
     return NextResponse.json(updatedTodo);
   } catch {
-    return NextResponse.json(
-      { error: 'Invalid request body' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   const id = params.id;
   const deletedTodo = deleteTodo(id);
 
@@ -53,4 +41,4 @@ export async function DELETE(
   }
 
   return NextResponse.json(deletedTodo);
-} 
+}

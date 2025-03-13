@@ -21,35 +21,35 @@ export function addTodo(text: string): Todo {
     completed: false,
     createdAt: new Date(),
   };
-  
+
   store.todos.push(newTodo);
   return newTodo;
 }
 
 export function updateTodo(id: string, updates: Partial<Todo>): Todo | null {
   const index = store.todos.findIndex(todo => todo.id === id);
-  
+
   if (index === -1) {
     return null;
   }
-  
+
   const updatedTodo = {
     ...store.todos[index],
     ...updates,
   };
-  
+
   store.todos[index] = updatedTodo;
   return updatedTodo;
 }
 
 export function deleteTodo(id: string): Todo | null {
   const index = store.todos.findIndex(todo => todo.id === id);
-  
+
   if (index === -1) {
     return null;
   }
-  
+
   const deletedTodo = store.todos[index];
   store.todos.splice(index, 1);
   return deletedTodo;
-} 
+}

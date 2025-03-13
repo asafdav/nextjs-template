@@ -68,4 +68,4 @@ export const deleteTodo = async (id: string): Promise<Todo> => {
     console.error('Error deleting todo:', error);
     throw error;
   }
-}; 
+};
