@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllTodos, addTodo } from './store';
+import { getAllTodos, addTodo, clearAllTodos } from './store';
 
 export async function GET() {
   return NextResponse.json(getAllTodos());
@@ -18,4 +18,9 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
+}
+
+export async function DELETE() {
+  clearAllTodos();
+  return NextResponse.json({ message: 'All todos cleared successfully' });
 }

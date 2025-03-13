@@ -5,6 +5,7 @@ import { Todo as TodoType } from '@/types/todo';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 import * as todoService from '@/services/todoService';
+import { localStorageService } from '@/utils/localStorage';
 
 const Todo: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
@@ -28,6 +29,18 @@ const Todo: React.FC = () => {
     };
 
     fetchTodos();
+
+    // Subscribe to localStorage updates for cross-tab sync
+    const unsubscribe = localStorageService.subscribeToUpdates((updatedTodos) => {
+      setTodos(updatedTodos);
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const addTodo = async (text: string) => {
@@ -48,10 +61,12 @@ const Todo: React.FC = () => {
       if (!todoToUpdate) return;
 
       const updatedTodo = await todoService.updateTodo(id, {
-        completed: !todoToUpdate.completed,
+        completed: !todoToUpdate.completed
       });
 
-      setTodos(todos.map(todo => (todo.id === id ? updatedTodo : todo)));
+      setTodos(todos.map(todo => 
+        todo.id === id ? updatedTodo : todo
+      ));
     } catch (err) {
       console.error('Failed to update todo:', err);
       setError('Failed to update todo. Please try again.');
@@ -69,6 +84,17 @@ const Todo: React.FC = () => {
     }
   };
 
+  const clearAllTodos = async () => {
+    try {
+      setError(null);
+      await todoService.clearAllTodos();
+      setTodos([]);
+    } catch (err) {
+      console.error('Failed to clear todos:', err);
+      setError('Failed to clear todos. Please try again.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="w-full max-w-2xl mx-auto p-6 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-md">
@@ -77,6 +103,7 @@ const Todo: React.FC = () => {
             className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"
             role="status"
             aria-label="Loading"
+            data-testid="loading-spinner"
           >
             <span className="sr-only">Loading...</span>
           </div>
@@ -99,6 +126,18 @@ const Todo: React.FC = () => {
 
       <TodoForm onAdd={addTodo} />
       <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+      
+      {todos.length > 0 && (
+        <div className="mt-6 text-center">
+          <button
+            onClick={clearAllTodos}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+            aria-label="Clear all todos"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
     </div>
   );
 };

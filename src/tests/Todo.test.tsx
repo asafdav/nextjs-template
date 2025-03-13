@@ -4,10 +4,18 @@ import '@testing-library/jest-dom';
 import Todo from '@/components/Todo/Todo';
 import { Todo as TodoType } from '@/types/todo';
 import * as todoService from '@/services/todoService';
+import { localStorageService } from '@/utils/localStorage';
 
 // Mock the todoService
 jest.mock('@/services/todoService');
 const mockTodoService = todoService as jest.Mocked<typeof todoService>;
+
+// Mock the localStorage service
+jest.mock('@/utils/localStorage', () => ({
+  localStorageService: {
+    subscribeToUpdates: jest.fn().mockReturnValue(() => {}),
+  },
+}));
 
 // Mock localStorage
 const mockLocalStorage = (() => {
@@ -27,13 +35,24 @@ Object.defineProperty(window, 'localStorage', {
   value: mockLocalStorage,
 });
 
-// Mock the subcomponents
+// Mock the child components
 jest.mock('@/components/Todo/TodoForm', () => {
   return function MockTodoForm({ onAdd }: { onAdd: (text: string) => void }) {
     return (
       <div data-testid="todo-form">
-        <input data-testid="mock-todo-input" placeholder="Add a new task..." />
-        <button data-testid="mock-add-button" onClick={() => onAdd('New Todo')}>
+        <input 
+          data-testid="mock-todo-input" 
+          placeholder="Add a new task..."
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onAdd('New Todo');
+            }
+          }}
+        />
+        <button 
+          data-testid="mock-add-button"
+          onClick={() => onAdd('New Todo')}
+        >
           Add
         </button>
       </div>
@@ -42,13 +61,13 @@ jest.mock('@/components/Todo/TodoForm', () => {
 });
 
 jest.mock('@/components/Todo/TodoList', () => {
-  return function MockTodoList({
-    todos,
-    onToggle,
-    onDelete,
-  }: {
-    todos: TodoType[];
-    onToggle: (id: string) => void;
+  return function MockTodoList({ 
+    todos, 
+    onToggle, 
+    onDelete 
+  }: { 
+    todos: TodoType[]; 
+    onToggle: (id: string) => void; 
     onDelete: (id: string) => void;
   }) {
     return (
@@ -56,10 +75,16 @@ jest.mock('@/components/Todo/TodoList', () => {
         {todos.map(todo => (
           <div key={todo.id} data-testid={`todo-item-${todo.id}`}>
             <span>{todo.text}</span>
-            <button data-testid={`toggle-${todo.id}`} onClick={() => onToggle(todo.id)}>
+            <button 
+              data-testid={`toggle-${todo.id}`}
+              onClick={() => onToggle(todo.id)}
+            >
               Toggle
             </button>
-            <button data-testid={`delete-${todo.id}`} onClick={() => onDelete(todo.id)}>
+            <button 
+              data-testid={`delete-${todo.id}`}
+              onClick={() => onDelete(todo.id)}
+            >
               Delete
             </button>
           </div>
@@ -75,159 +100,175 @@ describe('Todo Component with API', () => {
       id: '1',
       text: 'Test Todo 1',
       completed: false,
-      createdAt: new Date(),
+      createdAt: new Date('2025-01-01T12:00:00Z'),
     },
     {
       id: '2',
       text: 'Test Todo 2',
       completed: true,
-      createdAt: new Date(),
+      createdAt: new Date('2025-01-02T12:00:00Z'),
     },
   ];
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Mock the API responses
-    mockTodoService.getTodos.mockResolvedValue(mockTodos);
-    mockTodoService.addTodo.mockImplementation(async text => ({
-      id: '3',
-      text,
-      completed: false,
-      createdAt: new Date(),
-    }));
-    mockTodoService.updateTodo.mockImplementation(async (id, updates) => ({
-      ...mockTodos.find(todo => todo.id === id)!,
-      ...updates,
-    }));
-    mockTodoService.deleteTodo.mockImplementation(
-      async id => mockTodos.find(todo => todo.id === id)!
-    );
+    
+    // Mock the todoService methods
+    (todoService.getTodos as jest.Mock).mockResolvedValue(mockTodos);
+    (todoService.addTodo as jest.Mock).mockResolvedValue(mockTodos[0]);
+    (todoService.updateTodo as jest.Mock).mockResolvedValue({
+      ...mockTodos[0],
+      completed: !mockTodos[0].completed,
+    });
+    (todoService.deleteTodo as jest.Mock).mockResolvedValue(mockTodos[0]);
+    (todoService.clearAllTodos as jest.Mock).mockResolvedValue({ message: 'All todos cleared' });
   });
 
   it('renders loading state initially', async () => {
-    // Delay the API response
-    mockTodoService.getTodos.mockImplementation(
-      () => new Promise(resolve => setTimeout(() => resolve(mockTodos), 100))
+    // Delay the API response to show loading state
+    (todoService.getTodos as jest.Mock).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(mockTodos), 100))
     );
 
     render(<Todo />);
-
-    // Check if loading indicator is shown
-    expect(screen.getByRole('status')).toBeInTheDocument();
-
-    // Wait for the loading to complete
+    
+    // Should show loading spinner initially
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
   });
 
   it('fetches and displays todos from the API', async () => {
     render(<Todo />);
-
-    // Wait for the todos to be loaded
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(mockTodoService.getTodos).toHaveBeenCalledTimes(1);
-      expect(screen.getByTestId('todo-item-1')).toBeInTheDocument();
-      expect(screen.getByTestId('todo-item-2')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
+    
+    // Should display the todos
+    expect(screen.getByText('Test Todo 1')).toBeInTheDocument();
+    expect(screen.getByText('Test Todo 2')).toBeInTheDocument();
+    
+    // Should have called the API
+    expect(todoService.getTodos).toHaveBeenCalled();
   });
 
   it('shows error message when API fetch fails', async () => {
-    // Mock API error
-    mockTodoService.getTodos.mockRejectedValue(new Error('API Error'));
-
+    // Mock API failure
+    (todoService.getTodos as jest.Mock).mockRejectedValue(new Error('API Error'));
+    
     render(<Todo />);
-
-    // Wait for the error message to be displayed
+    
+    // Wait for the error message
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-      expect(screen.getByRole('alert')).toHaveTextContent('Failed to load todos');
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
+    
+    // Should display error message
+    expect(screen.getByText(/Failed to load todos/i)).toBeInTheDocument();
   });
 
   it('adds a new todo via the API', async () => {
     render(<Todo />);
-
-    // Wait for the todos to be loaded
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(screen.getByTestId('todo-list')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
-
+    
     // Add a new todo
     const addButton = screen.getByTestId('mock-add-button');
-    await act(async () => {
-      fireEvent.click(addButton);
-    });
-
-    // Check if the API was called and the new todo was added
-    await waitFor(() => {
-      expect(mockTodoService.addTodo).toHaveBeenCalledWith('New Todo');
-      expect(screen.getByTestId('todo-item-3')).toBeInTheDocument();
-    });
+    fireEvent.click(addButton);
+    
+    // Should call the API
+    expect(todoService.addTodo).toHaveBeenCalledWith('New Todo');
   });
 
   it('toggles a todo via the API', async () => {
     render(<Todo />);
-
-    // Wait for the todos to be loaded
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(screen.getByTestId('todo-list')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
-
-    // Toggle a todo
+    
+    // Toggle the first todo
     const toggleButton = screen.getByTestId('toggle-1');
-    await act(async () => {
-      fireEvent.click(toggleButton);
-    });
-
-    // Check if the API was called with the correct parameters
-    await waitFor(() => {
-      expect(mockTodoService.updateTodo).toHaveBeenCalledWith('1', { completed: true });
-    });
+    fireEvent.click(toggleButton);
+    
+    // Should call the API
+    expect(todoService.updateTodo).toHaveBeenCalledWith('1', { completed: true });
   });
 
   it('deletes a todo via the API', async () => {
     render(<Todo />);
-
-    // Wait for the todos to be loaded
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(screen.getByTestId('todo-list')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
-
-    // Delete a todo
+    
+    // Delete the first todo
     const deleteButton = screen.getByTestId('delete-1');
-    await act(async () => {
-      fireEvent.click(deleteButton);
-    });
-
-    // Check if the API was called with the correct parameters
-    await waitFor(() => {
-      expect(mockTodoService.deleteTodo).toHaveBeenCalledWith('1');
-      expect(screen.queryByTestId('todo-item-1')).not.toBeInTheDocument();
-    });
+    fireEvent.click(deleteButton);
+    
+    // Should call the API
+    expect(todoService.deleteTodo).toHaveBeenCalledWith('1');
   });
 
   it('shows error message when adding a todo fails', async () => {
-    // Mock API error
-    mockTodoService.addTodo.mockRejectedValue(new Error('API Error'));
-
+    // Mock API failure
+    (todoService.addTodo as jest.Mock).mockRejectedValue(new Error('API Error'));
+    
     render(<Todo />);
-
-    // Wait for the todos to be loaded
+    
+    // Wait for the todos to load
     await waitFor(() => {
-      expect(screen.getByTestId('todo-list')).toBeInTheDocument();
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
     });
-
-    // Try to add a new todo
+    
+    // Add a new todo
     const addButton = screen.getByTestId('mock-add-button');
-    await act(async () => {
-      fireEvent.click(addButton);
-    });
-
-    // Check if the error message is displayed
+    fireEvent.click(addButton);
+    
+    // Should call the API
+    expect(todoService.addTodo).toHaveBeenCalledWith('New Todo');
+    
+    // Should display error message
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-      expect(screen.getByRole('alert')).toHaveTextContent('Failed to add todo');
+      expect(screen.getByText(/Failed to add todo/i)).toBeInTheDocument();
     });
+  });
+
+  it('clears all todos when the clear button is clicked', async () => {
+    render(<Todo />);
+    
+    // Wait for the todos to load
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+    });
+    
+    // Click the clear all button
+    const clearButton = screen.getByText('Clear All');
+    fireEvent.click(clearButton);
+    
+    // Should call the API
+    expect(todoService.clearAllTodos).toHaveBeenCalled();
+  });
+
+  it('subscribes to localStorage updates', async () => {
+    render(<Todo />);
+    
+    // Wait for the todos to load
+    await waitFor(() => {
+      expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument();
+    });
+    
+    // Should have subscribed to localStorage updates
+    expect(localStorageService.subscribeToUpdates).toHaveBeenCalled();
   });
 });

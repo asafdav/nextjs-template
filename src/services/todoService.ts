@@ -1,4 +1,5 @@
 import { Todo } from '@/types/todo';
+import { localStorageService } from '@/utils/localStorage';
 
 // API endpoints
 const API_URL = '/api/todos';
@@ -68,4 +69,22 @@ export const deleteTodo = async (id: string): Promise<Todo> => {
     console.error('Error deleting todo:', error);
     throw error;
   }
+};
+
+// Clear all todos
+export const clearAllTodos = async (): Promise<void> => {
+  try {
+    const response = await fetch(API_URL, {
+      method: 'DELETE',
+    });
+    await handleResponse(response);
+  } catch (error) {
+    console.error('Error clearing todos:', error);
+    throw error;
+  }
+};
+
+// Subscribe to todo updates from other tabs
+export const subscribeToTodoUpdates = (callback: (todos: Todo[]) => void): () => void => {
+  return localStorageService.subscribeToUpdates(callback);
 };
