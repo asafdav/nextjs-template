@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { Todo } from '@/types/todo';
 import TodoItem from './TodoItem';
