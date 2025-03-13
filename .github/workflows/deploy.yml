@@ -39,11 +39,20 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug build output
+        run: |
+          echo "Listing build output directories:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: .next
+          path: |
+            .next/**/*
+            public/**/*
           retention-days: 1
 
   deploy_preview:
@@ -55,11 +64,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create .next directory if it doesn't exist
+        run: mkdir -p .next
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .next
+          path: ./
+
+      - name: Debug downloaded artifacts
+        run: |
+          echo "Listing directories after download:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
 
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
@@ -132,11 +151,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Create .next directory if it doesn't exist
+        run: mkdir -p .next
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-output
-          path: .next
+          path: ./
+
+      - name: Debug downloaded artifacts
+        run: |
+          echo "Listing directories after download:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
 
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
