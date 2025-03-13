@@ -150,6 +150,12 @@ The project includes GitHub Actions workflows for continuous integration and dep
 
 - **CI Workflow**: Runs on pull requests to validate code quality and tests
 - **Deployment Workflow**: Deploys to AWS Amplify when changes are merged to the main branch
+  - Automatically builds and tests the application
+  - Deploys preview environments for pull requests
+  - Comments on PRs with preview deployment links
+  - Deploys to production when merged to main
+
+For detailed deployment instructions and GitHub Actions setup, see [docs/amplify-deployment.md](docs/amplify-deployment.md).
 
 ## Documentation
 

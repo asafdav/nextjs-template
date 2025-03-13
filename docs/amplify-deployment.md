@@ -112,6 +112,40 @@ AWS Amplify automatically sets up continuous deployment for your application:
    - Amplify can also create preview deployments for pull requests
    - To enable this feature, go to "Preview" in the Amplify Console and enable "Pull request previews"
 
+## GitHub Actions Integration
+
+This project includes an enhanced GitHub Actions workflow for automated deployments to AWS Amplify:
+
+1. **Setting up GitHub Secrets**:
+
+   To enable the GitHub Actions workflow to deploy to AWS Amplify, you need to add the following secrets to your GitHub repository:
+
+   - Go to your GitHub repository
+   - Navigate to "Settings" > "Secrets and variables" > "Actions"
+   - Click "New repository secret" and add the following secrets:
+     - `AWS_ACCESS_KEY_ID`: Your AWS access key ID
+     - `AWS_SECRET_ACCESS_KEY`: Your AWS secret access key
+
+   These credentials should have permissions to deploy to AWS Amplify. It's recommended to create an IAM user with only the necessary permissions for security best practices.
+
+2. **Workflow Features**:
+
+   The GitHub Actions workflow (`deploy.yml`) provides the following features:
+
+   - **Continuous Integration**: Runs tests, linting, and builds on every PR and push to main
+   - **Preview Deployments**: Deploys a preview version for each PR and comments with the preview URL
+   - **Production Deployment**: Automatically deploys to production when changes are merged to main
+   - **Deployment Notifications**: Comments on commits with deployment status
+
+3. **Customizing the Workflow**:
+
+   You can customize the workflow by editing the `.github/workflows/deploy.yml` file:
+   
+   - Modify the Node.js version
+   - Add additional build or test steps
+   - Configure environment-specific variables
+   - Adjust the deployment strategy
+
 ## Next Steps
 
 After successfully deploying your application, consider:
