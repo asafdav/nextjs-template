@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Button from '@/components/Button';
 
 export default function Home() {
   return (
@@ -49,6 +50,12 @@ export default function Home() {
           >
             Read our docs
           </a>
+        </div>
+
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-4xl font-bold mb-8">Welcome to NextJS Template</h1>
+          <p className="text-xl mb-8">A starter template with TypeScript, ESLint, Prettier, and Jest</p>
+          <Button text="Get Started" />
         </div>
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
