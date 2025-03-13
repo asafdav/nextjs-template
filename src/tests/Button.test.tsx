@@ -11,7 +11,7 @@ describe('Button Component', () => {
   it('calls the onClick handler when clicked', () => {
     const handleClick = jest.fn();
     render(<Button text="Click me" onClick={handleClick} />);
-    
+
     fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -21,4 +21,4 @@ describe('Button Component', () => {
     const button = screen.getByText('Click me');
     expect(button).toHaveClass('custom-class');
   });
-}); 
+});
