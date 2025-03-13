@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 
 // Mock the next/link component
 jest.mock('next/link', () => {
-  return function MockLink({ children, ...props }: any) {
+  return function MockLink({ children, ...props }: React.ComponentProps<'a'> & { children: React.ReactNode }) {
     return <a {...props}>{children}</a>;
   };
 });

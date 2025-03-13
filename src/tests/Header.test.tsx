@@ -6,7 +6,7 @@ import '@testing-library/jest-dom';
 // Mock the next/image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ComponentProps<'img'>) => {
     // eslint-disable-next-line @next/next/no-img-element
     return <img {...props} alt={props.alt} />;
   },
@@ -14,7 +14,7 @@ jest.mock('next/image', () => ({
 
 // Mock the next/link component
 jest.mock('next/link', () => {
-  return function MockLink({ children, ...props }: any) {
+  return function MockLink({ children, ...props }: React.ComponentProps<'a'> & { children: React.ReactNode }) {
     return <a {...props}>{children}</a>;
   };
 });
