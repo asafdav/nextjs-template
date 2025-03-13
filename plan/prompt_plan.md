@@ -130,7 +130,7 @@ Ensure all tests pass and the component works as expected in the browser.
 - Added "use client" directives for client components
 - Successfully merged PR #3 into main branch
 
-#### Prompt 5: Data Handling with API Routes
+#### Prompt 5: Data Handling with API Routes ✅ COMPLETED
 
 ```
 Implement API routes for handling todo data:
@@ -153,6 +153,16 @@ Implement API routes for handling todo data:
 Ensure all tests pass and the Todo component correctly interacts with the API.
 Verify all GitHub Actions checks pass on your PR.
 ```
+
+**Implementation Notes:**
+
+- Created API routes in the app directory using Next.js 15.x route handlers
+- Implemented in-memory store for todos with CRUD operations
+- Created a todoService module to interact with the API
+- Updated the Todo component to use the API with loading and error states
+- Added comprehensive tests for API routes and the Todo component
+- Fixed type issues related to Next.js 15.x route handler parameters
+- Successfully passed all CI checks and merged PR #4
 
 #### Prompt 6: Data Persistence with Local Storage
 
