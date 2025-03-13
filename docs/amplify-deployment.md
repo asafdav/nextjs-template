@@ -140,7 +140,7 @@ This project includes an enhanced GitHub Actions workflow for automated deployme
 3. **Customizing the Workflow**:
 
    You can customize the workflow by editing the `.github/workflows/deploy.yml` file:
-   
+
    - Modify the Node.js version
    - Add additional build or test steps
    - Configure environment-specific variables

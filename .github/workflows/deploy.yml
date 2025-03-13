@@ -10,35 +10,35 @@ jobs:
   build_and_test:
     name: Build and Test
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x]
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Lint
         run: npm run lint
-      
+
       - name: Format check
         run: npm run format:check
-      
+
       - name: Test
         run: npm test
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -51,28 +51,28 @@ jobs:
     needs: build_and_test
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: build-output
           path: .next
-      
+
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Amplify CLI
         run: npm install -g @aws-amplify/cli
-      
+
       - name: Configure Amplify
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -81,7 +81,7 @@ jobs:
         run: |
           echo "Configuring Amplify..."
           amplify configure --profile default --accessKeyId $AWS_ACCESS_KEY_ID --secretAccessKey $AWS_SECRET_ACCESS_KEY --region $AWS_REGION
-      
+
       - name: Deploy to Amplify Preview
         id: deploy
         env:
@@ -93,13 +93,13 @@ jobs:
           echo "Deploying preview for PR #${PR_ID}..."
           # Create a unique branch name for this PR
           BRANCH_NAME="pr-${PR_ID}"
-          
+
           # Deploy to Amplify with the PR branch name
           PREVIEW_URL=$(amplify publish --simple --yes | grep -o 'https://[^ ]*amplifyapp.com')
-          
+
           # Set the preview URL as an output
           echo "preview_url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
-      
+
       - name: Comment on PR
         uses: actions/github-script@v6
         if: success()
@@ -128,28 +128,28 @@ jobs:
     needs: build_and_test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: build-output
           path: .next
-      
+
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Install Amplify CLI
         run: npm install -g @aws-amplify/cli
-      
+
       - name: Configure Amplify
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -158,7 +158,7 @@ jobs:
         run: |
           echo "Configuring Amplify..."
           amplify configure --profile default --accessKeyId $AWS_ACCESS_KEY_ID --secretAccessKey $AWS_SECRET_ACCESS_KEY --region $AWS_REGION
-      
+
       - name: Deploy to Amplify Production
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -167,7 +167,7 @@ jobs:
         run: |
           echo "Deploying to production..."
           amplify publish --simple --yes
-      
+
       - name: Notify Deployment Status
         if: always()
         uses: actions/github-script@v6
@@ -177,7 +177,7 @@ jobs:
             const { owner, repo } = context.repo;
             const commit = context.sha;
             const status = '${{ job.status }}';
-            
+
             let emoji, message;
             if (status === 'success') {
               emoji = '🚀';
@@ -186,7 +186,7 @@ jobs:
               emoji = '❌';
               message = 'Production deployment failed';
             }
-            
+
             github.rest.repos.createCommitComment({
               owner,
               repo,
