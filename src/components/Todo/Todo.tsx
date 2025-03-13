@@ -31,7 +31,7 @@ const Todo: React.FC = () => {
     fetchTodos();
 
     // Subscribe to localStorage updates for cross-tab sync
-    const unsubscribe = localStorageService.subscribeToUpdates((updatedTodos) => {
+    const unsubscribe = localStorageService.subscribeToUpdates(updatedTodos => {
       setTodos(updatedTodos);
     });
 
@@ -61,12 +61,10 @@ const Todo: React.FC = () => {
       if (!todoToUpdate) return;
 
       const updatedTodo = await todoService.updateTodo(id, {
-        completed: !todoToUpdate.completed
+        completed: !todoToUpdate.completed,
       });
 
-      setTodos(todos.map(todo => 
-        todo.id === id ? updatedTodo : todo
-      ));
+      setTodos(todos.map(todo => (todo.id === id ? updatedTodo : todo)));
     } catch (err) {
       console.error('Failed to update todo:', err);
       setError('Failed to update todo. Please try again.');
@@ -126,7 +124,7 @@ const Todo: React.FC = () => {
 
       <TodoForm onAdd={addTodo} />
       <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
-      
+
       {todos.length > 0 && (
         <div className="mt-6 text-center">
           <button

@@ -60,7 +60,7 @@ export const localStorageService = {
   /**
    * Subscribe to todos updates from other tabs
    */
-  subscribeToUpdates: (callback: (todos: Todo[]) => void): () => void => {
+  subscribeToUpdates: (callback: (todos: Todo[]) => void): (() => void) => {
     if (typeof window === 'undefined') {
       return () => {};
     }
@@ -78,7 +78,7 @@ export const localStorageService = {
 
     // Listen for storage events (from other tabs)
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Listen for custom events (from this tab)
     window.addEventListener('todos-updated', handleCustomEvent as EventListener);
 
@@ -87,5 +87,5 @@ export const localStorageService = {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('todos-updated', handleCustomEvent as EventListener);
     };
-  }
-}; 
+  },
+};

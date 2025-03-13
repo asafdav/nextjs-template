@@ -46,12 +46,12 @@ export function addTodo(text: string): Todo {
   };
 
   store.todos.push(newTodo);
-  
+
   // Persist to localStorage if in browser environment
   if (typeof window !== 'undefined') {
     localStorageService.saveTodos(store.todos);
   }
-  
+
   return newTodo;
 }
 
@@ -71,12 +71,12 @@ export function updateTodo(
   };
 
   store.todos[todoIndex] = updatedTodo;
-  
+
   // Persist to localStorage if in browser environment
   if (typeof window !== 'undefined') {
     localStorageService.saveTodos(store.todos);
   }
-  
+
   return updatedTodo;
 }
 
@@ -89,12 +89,12 @@ export function deleteTodo(id: string): Todo | null {
 
   const deletedTodo = store.todos[todoIndex];
   store.todos.splice(todoIndex, 1);
-  
+
   // Persist to localStorage if in browser environment
   if (typeof window !== 'undefined') {
     localStorageService.saveTodos(store.todos);
   }
-  
+
   return deletedTodo;
 }
 
@@ -103,7 +103,7 @@ export function deleteTodo(id: string): Todo | null {
  */
 export function clearAllTodos(): void {
   store.todos = [];
-  
+
   // Persist to localStorage if in browser environment
   if (typeof window !== 'undefined') {
     localStorageService.clearTodos();

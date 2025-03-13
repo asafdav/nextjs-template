@@ -53,17 +53,17 @@ describe('Todo API Routes', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock store functions
     (storeModule.getAllTodos as jest.Mock).mockReturnValue(mockTodos);
-    (storeModule.getTodoById as jest.Mock).mockImplementation((id) => {
+    (storeModule.getTodoById as jest.Mock).mockImplementation(id => {
       return id === '1' ? mockTodo : undefined;
     });
     (storeModule.addTodo as jest.Mock).mockReturnValue(mockTodo);
-    (storeModule.updateTodo as jest.Mock).mockImplementation((id) => {
+    (storeModule.updateTodo as jest.Mock).mockImplementation(id => {
       return id === '1' ? updatedTodo : null;
     });
-    (storeModule.deleteTodo as jest.Mock).mockImplementation((id) => {
+    (storeModule.deleteTodo as jest.Mock).mockImplementation(id => {
       return id === '1' ? mockTodo : null;
     });
   });

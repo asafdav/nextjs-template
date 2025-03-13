@@ -85,6 +85,6 @@ export const clearAllTodos = async (): Promise<void> => {
 };
 
 // Subscribe to todo updates from other tabs
-export const subscribeToTodoUpdates = (callback: (todos: Todo[]) => void): () => void => {
+export const subscribeToTodoUpdates = (callback: (todos: Todo[]) => void): (() => void) => {
   return localStorageService.subscribeToUpdates(callback);
 };

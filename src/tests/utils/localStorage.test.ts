@@ -39,7 +39,7 @@ beforeAll(() => {
   Object.defineProperty(window, 'localStorage', {
     value: mockLocalStorage,
   });
-  
+
   window.dispatchEvent = mockDispatchEvent;
   window.addEventListener = mockAddEventListener;
   window.removeEventListener = mockRemoveEventListener;
@@ -81,9 +81,9 @@ describe('localStorageService', () => {
       // When localStorage returns data, the dates are serialized as strings
       const serializedTodos = JSON.stringify(mockTodos);
       mockLocalStorage.getItem.mockReturnValueOnce(serializedTodos);
-      
+
       const todos = localStorageService.getTodos();
-      
+
       // The dates will be parsed as strings, so we need to compare with serialized data
       const expectedTodos = JSON.parse(serializedTodos);
       expect(todos).toEqual(expectedTodos);
@@ -92,14 +92,14 @@ describe('localStorageService', () => {
 
     it('should handle JSON parse errors', () => {
       mockLocalStorage.getItem.mockReturnValueOnce('invalid json');
-      
+
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
+
       const todos = localStorageService.getTodos();
-      
+
       expect(todos).toEqual([]);
       expect(consoleSpy).toHaveBeenCalled();
-      
+
       consoleSpy.mockRestore();
     });
   });
@@ -107,13 +107,10 @@ describe('localStorageService', () => {
   describe('saveTodos', () => {
     it('should save todos to localStorage', () => {
       localStorageService.saveTodos(mockTodos);
-      
-      expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-        'todos',
-        JSON.stringify(mockTodos)
-      );
+
+      expect(mockLocalStorage.setItem).toHaveBeenCalledWith('todos', JSON.stringify(mockTodos));
       expect(mockDispatchEvent).toHaveBeenCalled();
-      
+
       const event = mockDispatchEvent.mock.calls[0][0];
       expect(event.type).toBe('todos-updated');
       expect(event.detail).toEqual(mockTodos);
@@ -123,13 +120,13 @@ describe('localStorageService', () => {
       mockLocalStorage.setItem.mockImplementationOnce(() => {
         throw new Error('Storage error');
       });
-      
+
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
+
       localStorageService.saveTodos(mockTodos);
-      
+
       expect(consoleSpy).toHaveBeenCalled();
-      
+
       consoleSpy.mockRestore();
     });
   });
@@ -137,10 +134,10 @@ describe('localStorageService', () => {
   describe('clearTodos', () => {
     it('should remove todos from localStorage', () => {
       localStorageService.clearTodos();
-      
+
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('todos');
       expect(mockDispatchEvent).toHaveBeenCalled();
-      
+
       const event = mockDispatchEvent.mock.calls[0][0];
       expect(event.type).toBe('todos-updated');
       expect(event.detail).toEqual([]);
@@ -150,13 +147,13 @@ describe('localStorageService', () => {
       mockLocalStorage.removeItem.mockImplementationOnce(() => {
         throw new Error('Storage error');
       });
-      
+
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      
+
       localStorageService.clearTodos();
-      
+
       expect(consoleSpy).toHaveBeenCalled();
-      
+
       consoleSpy.mockRestore();
     });
   });
@@ -165,22 +162,22 @@ describe('localStorageService', () => {
     it('should return an unsubscribe function', () => {
       const callback = jest.fn();
       const unsubscribe = localStorageService.subscribeToUpdates(callback);
-      
+
       expect(typeof unsubscribe).toBe('function');
     });
 
     it('should call the callback when storage event occurs', () => {
       const callback = jest.fn();
       localStorageService.subscribeToUpdates(callback);
-      
+
       // Verify that addEventListener was called
       expect(mockAddEventListener).toHaveBeenCalledWith('storage', expect.any(Function));
-      
+
       // Get the registered handler and call it directly
       const handler = mockEventHandlers['storage'];
       const serializedTodos = JSON.stringify(mockTodos);
       handler({ key: 'todos', newValue: serializedTodos });
-      
+
       // Verify callback was called with parsed todos
       expect(callback).toHaveBeenCalled();
       const expectedTodos = JSON.parse(serializedTodos);
@@ -190,34 +187,34 @@ describe('localStorageService', () => {
     it('should not call the callback for other storage keys', () => {
       const callback = jest.fn();
       localStorageService.subscribeToUpdates(callback);
-      
+
       // Get the registered handler and call it with a different key
       const handler = mockEventHandlers['storage'];
       handler({ key: 'other-key', newValue: JSON.stringify(mockTodos) });
-      
+
       expect(callback).not.toHaveBeenCalled();
     });
 
     it('should call the callback when custom event occurs', () => {
       const callback = jest.fn();
       localStorageService.subscribeToUpdates(callback);
-      
+
       // Verify that addEventListener was called
       expect(mockAddEventListener).toHaveBeenCalledWith('todos-updated', expect.any(Function));
-      
+
       // Get the registered handler and call it directly
       const handler = mockEventHandlers['todos-updated'];
       handler({ detail: mockTodos });
-      
+
       expect(callback).toHaveBeenCalledWith(mockTodos);
     });
 
     it('should remove event listeners when unsubscribe is called', () => {
       const callback = jest.fn();
       const unsubscribe = localStorageService.subscribeToUpdates(callback);
-      
+
       unsubscribe();
-      
+
       expect(mockRemoveEventListener).toHaveBeenCalledTimes(2);
     });
   });
@@ -226,6 +223,6 @@ describe('localStorageService', () => {
 // Mock the storage event
 const mockStorageEvent = new Event('storage') as StorageEvent;
 Object.defineProperty(mockStorageEvent, 'key', { value: 'todos' });
-Object.defineProperty(mockStorageEvent, 'newValue', { 
-  value: JSON.stringify([{ id: '1', text: 'Test Todo', completed: false }]) 
-}); 
+Object.defineProperty(mockStorageEvent, 'newValue', {
+  value: JSON.stringify([{ id: '1', text: 'Test Todo', completed: false }]),
+});
