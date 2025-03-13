@@ -89,32 +89,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Amplify CLI
-        run: npm install -g @aws-amplify/cli
-
-      - name: Configure Amplify
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-        run: |
-          echo "Configuring Amplify..."
-          amplify configure --profile default --accessKeyId $AWS_ACCESS_KEY_ID --secretAccessKey $AWS_SECRET_ACCESS_KEY --region $AWS_REGION
-
-      - name: Deploy to Amplify Preview
+      - name: Mock Amplify Deployment (Preview)
         id: deploy
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
           PR_ID: ${{ github.event.pull_request.number }}
         run: |
           echo "Deploying preview for PR #${PR_ID}..."
-          # Create a unique branch name for this PR
-          BRANCH_NAME="pr-${PR_ID}"
+          echo "This is a mock deployment since AWS credentials are not set up."
 
-          # Deploy to Amplify with the PR branch name
-          PREVIEW_URL=$(amplify publish --simple --yes | grep -o 'https://[^ ]*amplifyapp.com')
+          # Mock a preview URL
+          PREVIEW_URL="https://pr-${PR_ID}-mock.amplifyapp.com"
 
           # Set the preview URL as an output
           echo "preview_url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
@@ -126,21 +110,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
-            if (previewUrl) {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `✅ Preview deployment is ready! \n\n🔍 Preview URL: [${previewUrl}](${previewUrl})`
-              });
-            } else {
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `⚠️ Preview deployment URL could not be determined. Please check the deployment logs.`
-              });
-            }
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Preview deployment would be ready at: [${previewUrl}](${previewUrl}) (mock URL for testing)`
+            });
 
   deploy_production:
     name: Deploy to Production
@@ -176,26 +151,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Amplify CLI
-        run: npm install -g @aws-amplify/cli
-
-      - name: Configure Amplify
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
-        run: |
-          echo "Configuring Amplify..."
-          amplify configure --profile default --accessKeyId $AWS_ACCESS_KEY_ID --secretAccessKey $AWS_SECRET_ACCESS_KEY --region $AWS_REGION
-
-      - name: Deploy to Amplify Production
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
+      - name: Mock Amplify Deployment (Production)
         run: |
           echo "Deploying to production..."
-          amplify publish --simple --yes
+          echo "This is a mock deployment since AWS credentials are not set up."
 
       - name: Notify Deployment Status
         if: always()
@@ -210,10 +169,10 @@ jobs:
             let emoji, message;
             if (status === 'success') {
               emoji = '🚀';
-              message = 'Successfully deployed to production';
+              message = 'Successfully deployed to production (mock deployment for testing)';
             } else {
               emoji = '❌';
-              message = 'Production deployment failed';
+              message = 'Production deployment failed (mock deployment for testing)';
             }
 
             github.rest.repos.createCommitComment({
