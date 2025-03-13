@@ -32,7 +32,7 @@ const mockAddEventListener = jest.fn((event, handler) => {
 const mockRemoveEventListener = jest.fn();
 
 // Store event handlers for testing
-const mockEventHandlers: Record<string, any> = {};
+const mockEventHandlers: Record<string, (event: Event) => void> = {};
 
 // Setup mocks before tests
 beforeAll(() => {
@@ -221,4 +221,11 @@ describe('localStorageService', () => {
       expect(mockRemoveEventListener).toHaveBeenCalledTimes(2);
     });
   });
+});
+
+// Mock the storage event
+const mockStorageEvent = new Event('storage') as StorageEvent;
+Object.defineProperty(mockStorageEvent, 'key', { value: 'todos' });
+Object.defineProperty(mockStorageEvent, 'newValue', { 
+  value: JSON.stringify([{ id: '1', text: 'Test Todo', completed: false }]) 
 }); 

@@ -4,7 +4,7 @@ import { localStorageService } from '@/utils/localStorage';
 
 // In-memory store for todos
 // Initialize with data from localStorage if in browser environment
-let store: {
+const store: {
   todos: Todo[];
 } = {
   todos: [],

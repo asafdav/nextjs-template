@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Todo from '@/components/Todo/Todo';
 import { Todo as TodoType } from '@/types/todo';
@@ -8,7 +8,6 @@ import { localStorageService } from '@/utils/localStorage';
 
 // Mock the todoService
 jest.mock('@/services/todoService');
-const mockTodoService = todoService as jest.Mocked<typeof todoService>;
 
 // Mock the localStorage service
 jest.mock('@/utils/localStorage', () => ({

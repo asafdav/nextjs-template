@@ -45,7 +45,7 @@ describe('Todo API Routes', () => {
   const updatedTodo = { ...mockTodo, text: 'Updated Todo', completed: true };
 
   // Create a simple mock request
-  const createMockRequest = (body?: any) => {
+  const createMockRequest = (body?: Record<string, unknown>) => {
     return {
       json: jest.fn().mockResolvedValue(body || {}),
     } as unknown as Request;
@@ -60,7 +60,7 @@ describe('Todo API Routes', () => {
       return id === '1' ? mockTodo : undefined;
     });
     (storeModule.addTodo as jest.Mock).mockReturnValue(mockTodo);
-    (storeModule.updateTodo as jest.Mock).mockImplementation((id, data) => {
+    (storeModule.updateTodo as jest.Mock).mockImplementation((id) => {
       return id === '1' ? updatedTodo : null;
     });
     (storeModule.deleteTodo as jest.Mock).mockImplementation((id) => {
@@ -139,11 +139,10 @@ describe('Todo API Routes', () => {
     it('should return a todo by id if it exists', async () => {
       // Act
       const response = await GETById(undefined, { params: { id: '1' } });
-      const data = await response.json();
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('1');
-      expect(data).toEqual(mockTodo);
+      expect(await response.json()).toEqual(mockTodo);
     });
 
     it('should return 404 if todo does not exist', async () => {
