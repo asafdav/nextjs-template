@@ -7,6 +7,7 @@ This document outlines a comprehensive, step-by-step approach to building a simp
 **Goal**: Create a simple NextJS application and deploy it to AWS Amplify using modern CI/CD practices.
 
 **Key Technologies**:
+
 - NextJS (React framework)
 - TypeScript
 - Jest & React Testing Library
@@ -307,10 +308,12 @@ All GitHub Actions checks should pass for your PR.
 ## Deployment and Release Process
 
 1. **Development Environment**:
+
    - Local development server running via `npm run dev`
    - Tests run locally before pushing
 
 2. **Staging Environment**:
+
    - Automatically deployed from GitHub PRs via Amplify previews
    - Used for manual testing and stakeholder reviews
 
@@ -321,10 +324,12 @@ All GitHub Actions checks should pass for your PR.
 ## Maintenance Plan
 
 1. **Regular Updates**:
+
    - Dependency updates on a monthly schedule
    - Security patches as needed
 
 2. **Monitoring**:
+
    - AWS Amplify monitoring for application health
    - Error logging for issue detection
 
@@ -334,4 +339,4 @@ All GitHub Actions checks should pass for your PR.
 
 ## Conclusion
 
-This implementation plan provides a comprehensive, step-by-step approach to building a NextJS application and deploying it to AWS Amplify with GitHub Actions integration. By following modern SDLC practices and implementing CI/CD from the beginning, we ensure a high-quality, maintainable application that can be easily updated and scaled in the future. 
+This implementation plan provides a comprehensive, step-by-step approach to building a NextJS application and deploying it to AWS Amplify with GitHub Actions integration. By following modern SDLC practices and implementing CI/CD from the beginning, we ensure a high-quality, maintainable application that can be easily updated and scaled in the future.

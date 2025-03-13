@@ -10,6 +10,7 @@ A modern NextJS application template with TypeScript, ESLint, Prettier, and Jest
 - **Prettier**: Code formatting tool
 - **Jest & React Testing Library**: Testing framework
 - **Tailwind CSS**: Utility-first CSS framework
+- **GitHub Actions**: Continuous Integration and Deployment
 
 ## Project Structure
 
