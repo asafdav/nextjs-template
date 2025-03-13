@@ -8,20 +8,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
+
     if (!body.text || typeof body.text !== 'string') {
-      return NextResponse.json(
-        { error: 'Text is required and must be a string' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Text is required and must be a string' }, { status: 400 });
     }
 
     const newTodo = addTodo(body.text);
     return NextResponse.json(newTodo, { status: 201 });
   } catch {
-    return NextResponse.json(
-      { error: 'Invalid request body' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 }
