@@ -17,14 +17,14 @@ describe('TodoList Component', () => {
       id: '1',
       text: 'Test Todo 1',
       completed: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     },
     {
       id: '2',
       text: 'Test Todo 2',
       completed: true,
-      createdAt: new Date()
-    }
+      createdAt: new Date(),
+    },
   ];
 
   const mockToggle = jest.fn();
@@ -47,4 +47,4 @@ describe('TodoList Component', () => {
     expect(screen.getByText('Test Todo 1')).toBeInTheDocument();
     expect(screen.getByText('Test Todo 2')).toBeInTheDocument();
   });
-}); 
+});

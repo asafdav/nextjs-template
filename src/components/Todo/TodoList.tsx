@@ -19,16 +19,11 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onToggle, onDelete }) => {
 
   return (
     <ul className="space-y-2" data-testid="todo-list">
-      {todos.map((todo) => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          onToggle={onToggle}
-          onDelete={onDelete}
-        />
+      {todos.map(todo => (
+        <TodoItem key={todo.id} todo={todo} onToggle={onToggle} onDelete={onDelete} />
       ))}
     </ul>
   );
 };
 
-export default TodoList; 
+export default TodoList;

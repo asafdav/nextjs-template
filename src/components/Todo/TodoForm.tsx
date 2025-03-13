@@ -21,7 +21,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
         <input
           type="text"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={e => setText(e.target.value)}
           placeholder="Add a new task..."
           className="flex-grow p-3 border border-gray-300 dark:border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
           data-testid="todo-input"
@@ -39,4 +39,4 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAdd }) => {
   );
 };
 
-export default TodoForm; 
+export default TodoForm;

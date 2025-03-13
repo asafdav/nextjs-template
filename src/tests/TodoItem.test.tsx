@@ -9,7 +9,7 @@ describe('TodoItem Component', () => {
     id: '1',
     text: 'Test Todo',
     completed: false,
-    createdAt: new Date()
+    createdAt: new Date(),
   };
 
   const mockToggle = jest.fn();
@@ -44,4 +44,4 @@ describe('TodoItem Component', () => {
     const todoText = screen.getByText('Test Todo');
     expect(todoText).toHaveClass('line-through');
   });
-}); 
+});

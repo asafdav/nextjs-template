@@ -3,6 +3,13 @@ import { Todo as TodoType } from '@/types/todo';
 import TodoForm from './TodoForm';
 import TodoList from './TodoList';
 
+interface StoredTodo {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 const Todo: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
 
@@ -12,9 +19,9 @@ const Todo: React.FC = () => {
     if (savedTodos) {
       try {
         // Parse the JSON string and convert date strings back to Date objects
-        const parsedTodos = JSON.parse(savedTodos).map((todo: any) => ({
+        const parsedTodos = JSON.parse(savedTodos).map((todo: StoredTodo) => ({
           ...todo,
-          createdAt: new Date(todo.createdAt)
+          createdAt: new Date(todo.createdAt),
         }));
         setTodos(parsedTodos);
       } catch (error) {
@@ -33,17 +40,13 @@ const Todo: React.FC = () => {
       id: Date.now().toString(),
       text,
       completed: false,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     setTodos([...todos, newTodo]);
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+    setTodos(todos.map(todo => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
   };
 
   const deleteTodo = (id: string) => {
@@ -61,4 +64,4 @@ const Todo: React.FC = () => {
   );
 };
 
-export default Todo; 
+export default Todo;
