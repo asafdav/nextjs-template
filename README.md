@@ -11,6 +11,9 @@ A modern NextJS application template with TypeScript, ESLint, Prettier, and Jest
 - **Jest & React Testing Library**: Testing framework
 - **Tailwind CSS**: Utility-first CSS framework
 - **GitHub Actions**: Continuous Integration and Deployment
+- **AWS Amplify**: Hosting and deployment platform
+- **Local Storage**: Data persistence across browser sessions
+- **Cross-Tab Sync**: Synchronization of data across browser tabs
 
 ## Project Structure
 
@@ -18,10 +21,18 @@ A modern NextJS application template with TypeScript, ESLint, Prettier, and Jest
 nextjs-template/
 ├── public/             # Static assets
 ├── src/
-│   ├── app/            # App router pages
+│   ├── app/            # App router pages and API routes
+│   │   └── api/        # API routes for data handling
 │   ├── components/     # Reusable UI components
+│   │   └── Todo/       # Todo application components
+│   ├── services/       # Service modules for API interaction
 │   ├── styles/         # CSS and styling files
-│   └── tests/          # Test files
+│   ├── tests/          # Test files
+│   ├── types/          # TypeScript type definitions
+│   └── utils/          # Utility functions and services
+├── docs/               # Documentation files
+├── .github/            # GitHub Actions workflows
+├── amplify.yml         # AWS Amplify build configuration
 ├── .eslintrc.js        # ESLint configuration
 ├── .prettierrc         # Prettier configuration
 ├── jest.config.mjs     # Jest configuration
@@ -113,6 +124,39 @@ Start the production server:
 ```bash
 npm start
 ```
+
+## Deployment
+
+This project is configured for deployment to AWS Amplify.
+
+### AWS Amplify Deployment
+
+1. **Prerequisites**:
+   - AWS account with appropriate permissions
+   - AWS Amplify CLI installed and configured
+
+2. **Deployment Steps**:
+   - Connect your GitHub repository to AWS Amplify Console
+   - Configure build settings using the provided `amplify.yml` file
+   - Set up environment variables if needed
+   - Deploy the application
+
+For detailed deployment instructions, see [docs/amplify-deployment.md](docs/amplify-deployment.md).
+
+### Continuous Deployment
+
+The project includes GitHub Actions workflows for continuous integration and deployment:
+
+- **CI Workflow**: Runs on pull requests to validate code quality and tests
+- **Deployment Workflow**: Deploys to AWS Amplify when changes are merged to the main branch
+
+## Documentation
+
+Additional documentation is available in the `docs` directory:
+
+- [Amplify Setup](docs/amplify-setup.md): Instructions for setting up AWS Amplify CLI
+- [Amplify Integration](docs/amplify-integration.md): Details about the Amplify integration
+- [Amplify Deployment](docs/amplify-deployment.md): Step-by-step deployment guide
 
 ## License
 
