@@ -11,14 +11,17 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
 ## Connecting the GitHub Repository to AWS Amplify Console
 
 1. **Log in to AWS Management Console**:
+
    - Go to [AWS Management Console](https://aws.amazon.com/console/)
    - Sign in with your AWS account credentials
 
 2. **Navigate to the Amplify Service**:
+
    - In the search bar at the top, type "Amplify" and select "AWS Amplify" from the dropdown
    - Alternatively, find Amplify under the "Mobile" or "Front-end Web & Mobile" section
 
 3. **Create a New Amplify App**:
+
    - Click on the "New app" button in the top-right corner
    - Select "Host web app" from the options
 
@@ -33,6 +36,7 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
 ## Configuring Build Settings
 
 1. **Review the Auto-Generated Build Specification**:
+
    - Amplify will detect that this is a Next.js application and generate a build specification
    - Compare the auto-generated specification with our custom `amplify.yml` file
    - If needed, replace the auto-generated specification with our custom configuration:
@@ -58,6 +62,7 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
    ```
 
 2. **Add Environment Variables (if needed)**:
+
    - Scroll down to the "Environment variables" section
    - Click "Add environment variable"
    - Add any necessary environment variables for your application:
@@ -65,6 +70,7 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
      - Add any other environment variables your application needs
 
 3. **Configure Domain Settings (Optional)**:
+
    - After the initial deployment, you can configure a custom domain
    - Go to the "Domain management" section in the Amplify Console
    - Follow the instructions to set up a custom domain
@@ -76,11 +82,13 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
 ## Monitoring the Deployment
 
 1. **View Deployment Status**:
+
    - After initiating the deployment, you'll be taken to the Amplify Console dashboard
    - You can monitor the progress of the deployment in real-time
    - The deployment process includes several phases: Provision, Build, Deploy, and Verify
 
 2. **Troubleshooting Deployment Issues**:
+
    - If the deployment fails, you can view the logs to identify the issue
    - Common issues include:
      - Missing environment variables
@@ -96,6 +104,7 @@ This guide provides step-by-step instructions for deploying the Next.js Todo app
 AWS Amplify automatically sets up continuous deployment for your application:
 
 1. **Automatic Deployments**:
+
    - Any changes pushed to the `main` branch will trigger a new deployment
    - You can view the deployment history in the Amplify Console
 
@@ -112,4 +121,4 @@ After successfully deploying your application, consider:
 3. **Setting up monitoring and alerts** for your application
 4. **Implementing authentication** using AWS Cognito
 
-For more information, refer to the [AWS Amplify Documentation](https://docs.aws.amazon.com/amplify/). 
+For more information, refer to the [AWS Amplify Documentation](https://docs.aws.amazon.com/amplify/).

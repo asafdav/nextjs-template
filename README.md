@@ -132,6 +132,7 @@ This project is configured for deployment to AWS Amplify.
 ### AWS Amplify Deployment
 
 1. **Prerequisites**:
+
    - AWS account with appropriate permissions
    - AWS Amplify CLI installed and configured
 
