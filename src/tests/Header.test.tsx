@@ -14,7 +14,10 @@ jest.mock('next/image', () => ({
 
 // Mock the next/link component
 jest.mock('next/link', () => {
-  return function MockLink({ children, ...props }: React.ComponentProps<'a'> & { children: React.ReactNode }) {
+  return function MockLink({
+    children,
+    ...props
+  }: React.ComponentProps<'a'> & { children: React.ReactNode }) {
     return <a {...props}>{children}</a>;
   };
 });
@@ -38,4 +41,4 @@ describe('Header Component', () => {
     const menuButton = screen.getByRole('button');
     expect(menuButton).toBeInTheDocument();
   });
-}); 
+});

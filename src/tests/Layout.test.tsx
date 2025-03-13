@@ -24,7 +24,7 @@ describe('Layout Component', () => {
         <div>Test Content</div>
       </Layout>
     );
-    
+
     expect(screen.getByTestId('mock-header')).toBeInTheDocument();
     expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
   });
@@ -35,8 +35,8 @@ describe('Layout Component', () => {
         <div data-testid="test-content">Test Content</div>
       </Layout>
     );
-    
+
     expect(screen.getByTestId('test-content')).toBeInTheDocument();
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
-}); 
+});
