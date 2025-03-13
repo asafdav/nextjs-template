@@ -33,7 +33,7 @@ export async function PUT(
     }
 
     return NextResponse.json(updatedTodo);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid request body' },
       { status: 400 }

@@ -1,5 +1,10 @@
-import { store } from '@/app/api/todos/store';
 import * as storeModule from '@/app/api/todos/store';
+import { NextRequest } from 'next/server';
+
+// Define types for mocks
+interface MockRequest extends Partial<NextRequest> {
+  json: jest.Mock;
+}
 
 // Mock the store module functions
 jest.mock('@/app/api/todos/store', () => {
@@ -64,12 +69,12 @@ describe('Todo API Routes', () => {
     it('should create a new todo', async () => {
       // Setup
       (storeModule.addTodo as jest.Mock).mockReturnValue(mockTodo);
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockResolvedValue({ text: 'Test Todo' })
       };
 
       // Execute
-      await POST(mockRequest as any);
+      await POST(mockRequest as unknown as NextRequest);
 
       // Assert
       expect(storeModule.addTodo).toHaveBeenCalledWith('Test Todo');
@@ -78,12 +83,12 @@ describe('Todo API Routes', () => {
 
     it('should return 400 if text is missing', async () => {
       // Setup
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockResolvedValue({})
       };
 
       // Execute
-      await POST(mockRequest as any);
+      await POST(mockRequest as unknown as NextRequest);
 
       // Assert
       expect(storeModule.addTodo).not.toHaveBeenCalled();
@@ -95,12 +100,12 @@ describe('Todo API Routes', () => {
 
     it('should return 400 if request body is invalid', async () => {
       // Setup
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
       };
 
       // Execute
-      await POST(mockRequest as any);
+      await POST(mockRequest as unknown as NextRequest);
 
       // Assert
       expect(storeModule.addTodo).not.toHaveBeenCalled();
@@ -115,11 +120,11 @@ describe('Todo API Routes', () => {
     it('should return a specific todo by id', async () => {
       // Setup
       (storeModule.getTodoById as jest.Mock).mockReturnValue(mockTodo);
-      const mockRequest = {};
+      const mockRequest: Partial<NextRequest> = {};
       const mockParams = { params: { id: '1' } };
 
       // Execute
-      await GET_BY_ID(mockRequest as any, mockParams);
+      await GET_BY_ID(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('1');
@@ -129,11 +134,11 @@ describe('Todo API Routes', () => {
     it('should return 404 if todo is not found', async () => {
       // Setup
       (storeModule.getTodoById as jest.Mock).mockReturnValue(undefined);
-      const mockRequest = {};
+      const mockRequest: Partial<NextRequest> = {};
       const mockParams = { params: { id: '999' } };
 
       // Execute
-      await GET_BY_ID(mockRequest as any, mockParams);
+      await GET_BY_ID(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('999');
@@ -149,13 +154,13 @@ describe('Todo API Routes', () => {
       // Setup
       const updatedTodo = { ...mockTodo, completed: true };
       (storeModule.updateTodo as jest.Mock).mockReturnValue(updatedTodo);
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockResolvedValue({ completed: true })
       };
       const mockParams = { params: { id: '1' } };
 
       // Execute
-      await PUT(mockRequest as any, mockParams);
+      await PUT(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.updateTodo).toHaveBeenCalledWith('1', { completed: true });
@@ -165,13 +170,13 @@ describe('Todo API Routes', () => {
     it('should return 404 if todo is not found', async () => {
       // Setup
       (storeModule.updateTodo as jest.Mock).mockReturnValue(null);
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockResolvedValue({ completed: true })
       };
       const mockParams = { params: { id: '999' } };
 
       // Execute
-      await PUT(mockRequest as any, mockParams);
+      await PUT(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.updateTodo).toHaveBeenCalledWith('999', { completed: true });
@@ -183,13 +188,13 @@ describe('Todo API Routes', () => {
 
     it('should return 400 if request body is invalid', async () => {
       // Setup
-      const mockRequest = {
+      const mockRequest: MockRequest = {
         json: jest.fn().mockRejectedValue(new Error('Invalid JSON'))
       };
       const mockParams = { params: { id: '1' } };
 
       // Execute
-      await PUT(mockRequest as any, mockParams);
+      await PUT(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.updateTodo).not.toHaveBeenCalled();
@@ -204,11 +209,11 @@ describe('Todo API Routes', () => {
     it('should delete a todo', async () => {
       // Setup
       (storeModule.deleteTodo as jest.Mock).mockReturnValue(mockTodo);
-      const mockRequest = {};
+      const mockRequest: Partial<NextRequest> = {};
       const mockParams = { params: { id: '1' } };
 
       // Execute
-      await DELETE(mockRequest as any, mockParams);
+      await DELETE(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.deleteTodo).toHaveBeenCalledWith('1');
@@ -218,11 +223,11 @@ describe('Todo API Routes', () => {
     it('should return 404 if todo is not found', async () => {
       // Setup
       (storeModule.deleteTodo as jest.Mock).mockReturnValue(null);
-      const mockRequest = {};
+      const mockRequest: Partial<NextRequest> = {};
       const mockParams = { params: { id: '999' } };
 
       // Execute
-      await DELETE(mockRequest as any, mockParams);
+      await DELETE(mockRequest as unknown as NextRequest, mockParams);
 
       // Assert
       expect(storeModule.deleteTodo).toHaveBeenCalledWith('999');

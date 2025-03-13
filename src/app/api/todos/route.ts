@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     const newTodo = addTodo(body.text);
     return NextResponse.json(newTodo, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Invalid request body' },
       { status: 400 }
