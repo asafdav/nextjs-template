@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import Button from '@/components/Button';
 import Layout from '@/components/Layout';
+import Todo from '@/components/Todo';
 
 export default function Home() {
   return (
@@ -21,30 +21,9 @@ export default function Home() {
           A modern NextJS application template with TypeScript, ESLint, Prettier, and Jest
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mb-12">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-3">TypeScript</h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Type-safe JavaScript for better developer experience and fewer bugs.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-3">Testing</h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Jest and React Testing Library for comprehensive test coverage.
-            </p>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-3">Tailwind CSS</h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Utility-first CSS framework for rapid UI development.
-            </p>
-          </div>
+        <div className="w-full max-w-4xl mb-12">
+          <Todo />
         </div>
-
-        <Button text="Get Started" />
       </div>
     </Layout>
   );
