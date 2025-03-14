@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  
+
   // Exclude specific directories from being processed by webpack
   webpack: (config, { isServer }) => {
     // Add infrastructure to the list of excluded directories
