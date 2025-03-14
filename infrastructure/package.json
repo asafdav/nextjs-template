@@ -1,15 +1,29 @@
 {
   "name": "infrastructure",
   "version": "0.1.0",
+  "description": "AWS CDK Infrastructure for Todo App",
+  "main": "bin/infrastructure.js",
   "bin": {
     "infrastructure": "bin/infrastructure.js"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "bootstrap": "cdk bootstrap"
+    "bootstrap": "cdk bootstrap",
+    "deploy": "cdk deploy",
+    "synth": "cdk synth"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-amplify-alpha": "^2.183.0-alpha.0",
+    "aws-cdk-lib": "^2.183.0",
+    "constructs": "^10.4.2",
+    "source-map-support": "^0.5.21"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -20,10 +34,12 @@
     "ts-node": "^10.9.2",
     "typescript": "~5.3.3"
   },
-  "dependencies": {
-    "@aws-cdk/aws-amplify-alpha": "^2.183.0-alpha.0",
-    "aws-cdk-lib": "^2.183.0",
-    "constructs": "^10.4.2",
-    "source-map-support": "^0.5.21"
-  }
+  "keywords": [
+    "aws",
+    "cdk",
+    "infrastructure",
+    "amplify"
+  ],
+  "author": "",
+  "license": "ISC"
 }
