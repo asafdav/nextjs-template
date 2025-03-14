@@ -11,16 +11,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_ENVIRONMENT: process.env.ENVIRONMENT || 'development',
   },
-  // Configure redirects for better user experience
-  async redirects() {
-    return [
-      {
-        source: '/health',
-        destination: '/api/debug',
-        permanent: false,
-      },
-    ];
-  },
+  // Disable API routes for static export
+  // API routes are not supported in static exports
+  // We'll use the static JSON files in the public directory instead
 };
 
 module.exports = nextConfig; 
