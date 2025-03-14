@@ -225,7 +225,7 @@ Verify GitHub Actions workflow still passes with the new configuration.
 - Verified all tests, builds, and CI checks pass with the new configuration
 - Successfully merged PR #6 into main branch
 
-#### Prompt 8: AWS Amplify Deployment Configuration
+#### Prompt 8: AWS Amplify Deployment Configuration ✅ COMPLETED
 
 ```
 Configure AWS Amplify for deployment:
@@ -244,7 +244,18 @@ Configure AWS Amplify for deployment:
 Verify that Amplify is correctly configured to build your application.
 ```
 
-#### Prompt 9: Enhanced GitHub Actions for Amplify Deployment
+**Implementation Notes:**
+
+- Created comprehensive deployment guide in `docs/amplify-deployment.md`
+- Updated README.md with detailed deployment information
+- Verified the existing amplify.yml configuration is correct for building the application
+- Added step-by-step instructions for connecting GitHub repository to AWS Amplify Console
+- Included guidance on configuring build settings and environment variables
+- Added information about monitoring deployment status and troubleshooting
+- Successfully passed all tests and builds with the Amplify configuration
+- Created and merged PR #7 with the documentation updates
+
+#### Prompt 9: Enhanced GitHub Actions for Amplify Deployment ✅ COMPLETED
 
 ```
 Create an enhanced GitHub Actions workflow for AWS Amplify deployment:
@@ -264,6 +275,18 @@ Create an enhanced GitHub Actions workflow for AWS Amplify deployment:
 
 Verify that the GitHub Actions workflow correctly deploys to AWS Amplify when merged to main.
 ```
+
+**Implementation Notes:**
+
+- Enhanced the existing GitHub Actions workflow in `.github/workflows/deploy.yml`
+- Created a multi-job workflow that separates build/test from deployment
+- Added preview deployments for pull requests with automatic PR comments
+- Implemented production deployment for the main branch
+- Added deployment status notifications on commits
+- Updated documentation with instructions for setting up GitHub Secrets
+- Added detailed information about the workflow features in the README and deployment guide
+- Ensured the workflow only deploys if all tests pass
+- Created PR #8 with the enhanced workflow
 
 ### Phase 4: Testing and Optimization
 
@@ -344,6 +367,51 @@ Complete the final integration and documentation:
 
 Ensure the project is fully integrated, well-documented, and ready for use or further development.
 All GitHub Actions checks should pass for your PR.
+```
+
+#### Prompt 14: AWS Infrastructure as Code with CDK
+
+```
+Implement AWS infrastructure as code using AWS CDK for our NextJS application:
+
+1. Set up a new AWS CDK project with TypeScript in an 'infrastructure' directory:
+   - Initialize the CDK project with appropriate configuration
+   - Create a CDK stack for our Amplify application and related resources
+   - Configure TypeScript and necessary dependencies
+
+2. Define the following AWS resources in the CDK stack:
+   - Amplify application connected to our GitHub repository
+   - Branch configurations for main (production) and preview deployments
+   - DynamoDB table for storing Todo items with appropriate indexes
+   - CloudFront distribution for content delivery (if needed)
+   - S3 bucket for static assets with proper configuration
+   - IAM roles and policies with least privilege principles
+   - CloudWatch alarms and dashboards for monitoring
+
+3. Implement environment separation:
+   - Configure development, staging, and production environments
+   - Use context variables or environment variables for configuration
+   - Ensure proper resource isolation between environments
+
+4. Create deployment scripts and documentation:
+   - Script for initial deployment and updates
+   - Integration with existing GitHub Actions workflows
+   - Update README with CDK deployment instructions
+   - Document the architecture with a diagram
+
+5. Update the application code if necessary:
+   - Modify API routes to work with the new infrastructure
+   - Update environment variables and configuration
+   - Ensure seamless integration with the CDK-deployed resources
+
+6. Implement security best practices:
+   - Encryption for data at rest and in transit
+   - Secure IAM policies and resource configurations
+   - WAF rules for the application if appropriate
+
+7. Create a PR with your changes and ensure all tests pass
+
+Verify that the infrastructure can be deployed using CDK and that the application works correctly with the deployed resources. The infrastructure should match our existing manually configured setup but be fully automated and reproducible.
 ```
 
 ## Deployment and Release Process

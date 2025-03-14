@@ -3,9 +3,17 @@ name: Deploy to Amplify
 on:
   push:
     branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Add permissions for GitHub token
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  deploy:
+  build_and_test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,23 +44,145 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Install Amplify CLI
-        run: npm install -g @aws-amplify/cli
+      - name: Debug build output
+        run: |
+          echo "Listing build output directories:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
 
-      - name: Configure Amplify
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            .next/**/*
+            public/**/*
+          retention-days: 1
+
+  deploy_preview:
+    name: Deploy Preview
+    needs: build_and_test
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create .next directory if it doesn't exist
+        run: mkdir -p .next
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: ./
+
+      - name: Debug downloaded artifacts
+        run: |
+          echo "Listing directories after download:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Mock Amplify Deployment (Preview)
+        id: deploy
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-east-1
+          PR_ID: ${{ github.event.pull_request.number }}
         run: |
-          echo "Configuring Amplify..."
-          # This is a placeholder for actual Amplify deployment commands
-          # In a real scenario, you would use the Amplify CLI to deploy
-          # Example: amplify publish
+          echo "Deploying preview for PR #${PR_ID}..."
+          echo "This is a mock deployment since AWS credentials are not set up."
 
-      - name: Deploy to Amplify
+          # Mock a preview URL
+          PREVIEW_URL="https://pr-${PR_ID}-mock.amplifyapp.com"
+
+          # Set the preview URL as an output
+          echo "preview_url=${PREVIEW_URL}" >> $GITHUB_OUTPUT
+
+      - name: Comment on PR
+        uses: actions/github-script@v6
+        if: success()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `✅ Preview deployment would be ready at: [${previewUrl}](${previewUrl}) (mock URL for testing)`
+            });
+
+  deploy_production:
+    name: Deploy to Production
+    needs: build_and_test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create .next directory if it doesn't exist
+        run: mkdir -p .next
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: ./
+
+      - name: Debug downloaded artifacts
         run: |
-          echo "Deploying to Amplify..."
-          # This is a placeholder for actual Amplify deployment commands
-          # In a real scenario, you would use the Amplify CLI to deploy
-          # Example: amplify publish
+          echo "Listing directories after download:"
+          ls -la
+          echo "Checking .next directory:"
+          ls -la .next || echo ".next directory not found"
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Mock Amplify Deployment (Production)
+        run: |
+          echo "Deploying to production..."
+          echo "This is a mock deployment since AWS credentials are not set up."
+
+      - name: Notify Deployment Status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const commit = context.sha;
+            const status = '${{ job.status }}';
+
+            let emoji, message;
+            if (status === 'success') {
+              emoji = '🚀';
+              message = 'Successfully deployed to production (mock deployment for testing)';
+            } else {
+              emoji = '❌';
+              message = 'Production deployment failed (mock deployment for testing)';
+            }
+
+            github.rest.repos.createCommitComment({
+              owner,
+              repo,
+              commit_sha: commit,
+              body: `${emoji} ${message}`
+            });
