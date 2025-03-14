@@ -18,7 +18,8 @@ export default function DebugPage() {
     const testApi = async () => {
       try {
         console.log('Testing API connection...');
-        const response = await fetch('/api/debug');
+        // For static export, try to fetch the JSON file directly
+        const response = await fetch('/api/debug/data.json');
         console.log('API response status:', response.status);
         
         if (!response.ok) {
@@ -57,6 +58,13 @@ export default function DebugPage() {
           }
         }
       });
+      
+      // Add any environment variables exposed to the client
+      if (typeof window !== 'undefined') {
+        if (process.env.NEXT_PUBLIC_ENVIRONMENT) {
+          vars['NEXT_PUBLIC_ENVIRONMENT'] = process.env.NEXT_PUBLIC_ENVIRONMENT;
+        }
+      }
       
       setEnvVars(vars);
     };
