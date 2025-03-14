@@ -14,6 +14,8 @@ A modern NextJS application template with TypeScript, ESLint, Prettier, and Jest
 - **AWS Amplify**: Hosting and deployment platform
 - **Local Storage**: Data persistence across browser sessions
 - **Cross-Tab Sync**: Synchronization of data across browser tabs
+- **Auto branch detection**: Feature branches
+- **DynamoDB**: Data storage
 
 ## Project Structure
 

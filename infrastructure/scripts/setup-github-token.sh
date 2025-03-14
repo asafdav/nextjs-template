@@ -17,10 +17,13 @@ if [[ "$1" == "-h" || "$1" == "--help" || -z "$GITHUB_TOKEN" ]]; then
   echo ""
   echo "Note: You need to create a GitHub personal access token with 'repo' and 'admin:repo_hook' permissions."
   echo "      Visit https://github.com/settings/tokens to create one."
+  echo ""
+  echo "IMPORTANT: This script is REQUIRED for automated GitHub integration through CDK."
+  echo "The token will be used by the GitHubSourceCodeProvider to connect your repository to Amplify."
   exit 1
 fi
 
-echo "Setting up GitHub token in AWS Secrets Manager"
+echo "Setting up GitHub token in AWS Secrets Manager for automated GitHub integration"
 echo "Using AWS profile: $AWS_PROFILE"
 
 # Get AWS region
@@ -50,7 +53,7 @@ if [ -z "$SECRET_EXISTS" ]; then
   echo "Creating new secret 'github-token' in AWS Secrets Manager..."
   aws secretsmanager create-secret \
     --name github-token \
-    --description "GitHub token for AWS Amplify" \
+    --description "GitHub token for AWS Amplify automated integration" \
     --secret-string file://"$JSON_FILE" \
     --profile "$AWS_PROFILE"
 else
@@ -58,7 +61,7 @@ else
   echo "Updating existing secret 'github-token' in AWS Secrets Manager..."
   aws secretsmanager update-secret \
     --secret-id github-token \
-    --description "GitHub token for AWS Amplify" \
+    --description "GitHub token for AWS Amplify automated integration" \
     --secret-string file://"$JSON_FILE" \
     --profile "$AWS_PROFILE"
 fi
@@ -67,5 +70,15 @@ fi
 rm -f "$JSON_FILE"
 
 echo "GitHub token successfully stored in AWS Secrets Manager."
-echo "You can now deploy your infrastructure with:"
-echo "./scripts/deploy.sh [environment] [branch] $AWS_PROFILE" 
+echo ""
+echo "Next steps:"
+echo "1. Deploy your infrastructure with:"
+echo "   ./scripts/deploy.sh [environment] [branch] $AWS_PROFILE"
+echo ""
+echo "2. The deployment will automatically connect your GitHub repository to Amplify"
+echo "   using the GitHubSourceCodeProvider in the CDK code."
+echo ""
+echo "3. If you see a 'Migrate to our GitHub app' prompt in the Amplify Console:"
+echo "   - Click 'Start migration'"
+echo "   - Follow the steps to install the AWS Amplify GitHub App"
+echo "   - This migration is required by AWS and provides better security" 
