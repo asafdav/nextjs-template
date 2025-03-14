@@ -170,14 +170,24 @@ export class InfrastructureStack extends cdk.Stack {
       }),
       customRules: [
         {
+          source: '/api/<*>',
+          target: '/api/<*>',
+          status: amplify.RedirectStatus.REWRITE,
+        },
+        {
+          source: '/_next/*',
+          target: '/_next/*',
+          status: amplify.RedirectStatus.REWRITE,
+        },
+        {
+          source: '/static/*',
+          target: '/static/*',
+          status: amplify.RedirectStatus.REWRITE,
+        },
+        {
           source: '/<*>',
           target: '/index.html',
           status: amplify.RedirectStatus.NOT_FOUND_REWRITE,
-        },
-        {
-          source: '/api/<*>',
-          target: '/api/index.html',
-          status: amplify.RedirectStatus.REWRITE,
         },
       ],
     });
