@@ -125,46 +125,112 @@ Start the production server:
 npm start
 ```
 
-## Deployment
+## Deployment with AWS Amplify
 
-This project is configured for deployment to AWS Amplify.
+This project uses AWS Amplify for deployment, with a team-friendly approach that leverages AWS Amplify's direct GitHub integration.
 
-### AWS Amplify Deployment
+### Prerequisites
 
-1. **Prerequisites**:
+- AWS account with appropriate permissions
+- AWS CLI configured with a profile that has necessary permissions
+- Git repository cloned locally
+- GitHub repository with admin access
 
-   - AWS account with appropriate permissions
-   - AWS Amplify CLI installed and configured
+### Deploying the Infrastructure
 
-2. **Deployment Steps**:
-   - Connect your GitHub repository to AWS Amplify Console
-   - Configure build settings using the provided `amplify.yml` file
-   - Set up environment variables if needed
-   - Deploy the application
+#### Step 1: Configure AWS Environment (One-time Setup)
 
-For detailed deployment instructions, see [docs/amplify-deployment.md](docs/amplify-deployment.md).
+First, configure your AWS environment:
 
-### Continuous Deployment
+```bash
+cd infrastructure
+./scripts/configure-aws.sh [aws-profile]
+```
 
-The project includes GitHub Actions workflows for continuous integration and deployment:
+Arguments:
 
-- **CI Workflow**: Runs on pull requests to validate code quality and tests
-- **Deployment Workflow**: Deploys to AWS Amplify when changes are merged to the main branch
-  - Automatically builds and tests the application
-  - Deploys preview environments for pull requests
-  - Comments on PRs with preview deployment links
-  - Deploys to production when merged to main
+- `aws-profile`: AWS profile to use. Default: default
 
-For detailed deployment instructions and GitHub Actions setup, see [docs/amplify-deployment.md](docs/amplify-deployment.md).
+Examples:
+
+```bash
+./scripts/configure-aws.sh my-profile
+```
+
+After running this script:
+
+1. Source the environment variables: `source .env` or `source load-env.sh`
+2. The script will also offer to bootstrap your AWS environment for CDK if needed
+
+#### Step 2: Deploy the Infrastructure
+
+After configuring AWS, deploy the infrastructure:
+
+```bash
+./scripts/deploy.sh [environment] [branch] [aws-profile]
+```
+
+Arguments:
+
+- `environment`: Environment to deploy (dev, staging, production). Default: dev
+- `branch`: Git branch to deploy. Default: same as environment
+- `aws-profile`: AWS profile to use. Default: default
+
+Examples:
+
+```bash
+./scripts/deploy.sh dev main my-profile
+```
+
+The script will:
+
+1. Load environment variables
+2. Validate your AWS credentials
+3. Install dependencies and build the CDK app
+4. Deploy the infrastructure with the appropriate settings
+5. Provide instructions for connecting to GitHub
+
+#### Step 3: Connect to GitHub
+
+After deployment, you'll need to connect your Amplify app to GitHub:
+
+1. Find the Amplify Console URL in the deployment output
+2. Go to the Amplify Console and click "Connect branch"
+3. Choose GitHub as the repository provider
+4. Authorize AWS Amplify to access your GitHub account
+5. Select your repository and branch
+6. Click "Connect branch"
+
+After connecting your repository, Amplify will automatically build and deploy your application.
+
+### How the GitHub Integration Works
+
+AWS Amplify's GitHub integration:
+
+1. **Uses OAuth Authentication**: Securely connects to GitHub without personal access tokens
+2. **Automatic Deployments**: Automatically builds and deploys when changes are pushed to the connected branch
+3. **Pull Request Previews**: Optionally creates preview environments for pull requests
+4. **Branch-based Environments**: Supports multiple environments based on different branches
+
+### Benefits of This Approach
+
+- **Simple Setup**: Easy to configure through the Amplify Console UI
+- **No Personal Tokens**: Uses OAuth for secure authentication
+- **Team-Friendly**: Works with organizational repositories
+- **Secure**: Follows AWS security best practices
+- **Scalable**: Can be used across multiple projects and teams
+- **Maintainable**: Easy to manage and update as your team and project evolve
+
+### Accessing Your Application
+
+Once deployment and GitHub connection are complete, you can access your application at the URL provided in the Amplify Console. The URL will be in the format:
+
+```
+https://branch-name.app-id.amplifyapp.com
+```
+
+This URL is also provided in the CloudFormation outputs after deployment.
 
 ## Documentation
 
-Additional documentation is available in the `docs` directory:
-
-- [Amplify Setup](docs/amplify-setup.md): Instructions for setting up AWS Amplify CLI
-- [Amplify Integration](docs/amplify-integration.md): Details about the Amplify integration
-- [Amplify Deployment](docs/amplify-deployment.md): Step-by-step deployment guide
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+Additional documentation is available in the `docs`

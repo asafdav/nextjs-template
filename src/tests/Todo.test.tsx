@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Todo from '@/components/Todo/Todo';
 import { Todo as TodoType } from '@/types/todo';
@@ -171,8 +171,10 @@ describe('Todo Component with API', () => {
     });
 
     // Add a new todo
-    const addButton = screen.getByTestId('mock-add-button');
-    fireEvent.click(addButton);
+    await act(async () => {
+      const addButton = screen.getByTestId('mock-add-button');
+      fireEvent.click(addButton);
+    });
 
     // Should call the API
     expect(todoService.addTodo).toHaveBeenCalledWith('New Todo');
@@ -187,8 +189,10 @@ describe('Todo Component with API', () => {
     });
 
     // Toggle the first todo
-    const toggleButton = screen.getByTestId('toggle-1');
-    fireEvent.click(toggleButton);
+    await act(async () => {
+      const toggleButton = screen.getByTestId('toggle-1');
+      fireEvent.click(toggleButton);
+    });
 
     // Should call the API
     expect(todoService.updateTodo).toHaveBeenCalledWith('1', { completed: true });
@@ -203,8 +207,10 @@ describe('Todo Component with API', () => {
     });
 
     // Delete the first todo
-    const deleteButton = screen.getByTestId('delete-1');
-    fireEvent.click(deleteButton);
+    await act(async () => {
+      const deleteButton = screen.getByTestId('delete-1');
+      fireEvent.click(deleteButton);
+    });
 
     // Should call the API
     expect(todoService.deleteTodo).toHaveBeenCalledWith('1');
@@ -222,8 +228,10 @@ describe('Todo Component with API', () => {
     });
 
     // Add a new todo
-    const addButton = screen.getByTestId('mock-add-button');
-    fireEvent.click(addButton);
+    await act(async () => {
+      const addButton = screen.getByTestId('mock-add-button');
+      fireEvent.click(addButton);
+    });
 
     // Should call the API
     expect(todoService.addTodo).toHaveBeenCalledWith('New Todo');
@@ -243,8 +251,10 @@ describe('Todo Component with API', () => {
     });
 
     // Click the clear all button
-    const clearButton = screen.getByText('Clear All');
-    fireEvent.click(clearButton);
+    await act(async () => {
+      const clearButton = screen.getByText('Clear All');
+      fireEvent.click(clearButton);
+    });
 
     // Should call the API
     expect(todoService.clearAllTodos).toHaveBeenCalled();

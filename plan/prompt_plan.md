@@ -369,6 +369,51 @@ Ensure the project is fully integrated, well-documented, and ready for use or fu
 All GitHub Actions checks should pass for your PR.
 ```
 
+#### Prompt 14: AWS Infrastructure as Code with CDK
+
+```
+Implement AWS infrastructure as code using AWS CDK for our NextJS application:
+
+1. Set up a new AWS CDK project with TypeScript in an 'infrastructure' directory:
+   - Initialize the CDK project with appropriate configuration
+   - Create a CDK stack for our Amplify application and related resources
+   - Configure TypeScript and necessary dependencies
+
+2. Define the following AWS resources in the CDK stack:
+   - Amplify application connected to our GitHub repository
+   - Branch configurations for main (production) and preview deployments
+   - DynamoDB table for storing Todo items with appropriate indexes
+   - CloudFront distribution for content delivery (if needed)
+   - S3 bucket for static assets with proper configuration
+   - IAM roles and policies with least privilege principles
+   - CloudWatch alarms and dashboards for monitoring
+
+3. Implement environment separation:
+   - Configure development, staging, and production environments
+   - Use context variables or environment variables for configuration
+   - Ensure proper resource isolation between environments
+
+4. Create deployment scripts and documentation:
+   - Script for initial deployment and updates
+   - Integration with existing GitHub Actions workflows
+   - Update README with CDK deployment instructions
+   - Document the architecture with a diagram
+
+5. Update the application code if necessary:
+   - Modify API routes to work with the new infrastructure
+   - Update environment variables and configuration
+   - Ensure seamless integration with the CDK-deployed resources
+
+6. Implement security best practices:
+   - Encryption for data at rest and in transit
+   - Secure IAM policies and resource configurations
+   - WAF rules for the application if appropriate
+
+7. Create a PR with your changes and ensure all tests pass
+
+Verify that the infrastructure can be deployed using CDK and that the application works correctly with the deployed resources. The infrastructure should match our existing manually configured setup but be fully automated and reproducible.
+```
+
 ## Deployment and Release Process
 
 1. **Development Environment**:

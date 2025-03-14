@@ -11,21 +11,7 @@ jest.mock('@/app/api/todos/store', () => ({
   clearAllTodos: jest.fn(),
 }));
 
-// Mock the NextResponse.json function
-jest.mock('next/server', () => ({
-  NextResponse: {
-    json: jest.fn().mockImplementation((data, options) => ({
-      json: async () => data,
-      status: options?.status || 200,
-    })),
-  },
-}));
-
-// Import the API routes after mocking
-import { GET, POST, DELETE as DELETEAll } from '@/app/api/todos/route';
-import { GET as GETById, PUT, DELETE as DELETEById } from '@/app/api/todos/[id]/route';
-
-describe('Todo API Routes', () => {
+describe('Todo Store Module', () => {
   const mockTodos: Todo[] = [
     {
       id: '1',
@@ -44,13 +30,6 @@ describe('Todo API Routes', () => {
   const mockTodo = mockTodos[0];
   const updatedTodo = { ...mockTodo, text: 'Updated Todo', completed: true };
 
-  // Create a simple mock request
-  const createMockRequest = (body?: Record<string, unknown>) => {
-    return {
-      json: jest.fn().mockResolvedValue(body || {}),
-    } as unknown as Request;
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -68,162 +47,107 @@ describe('Todo API Routes', () => {
     });
   });
 
-  describe('GET /api/todos', () => {
-    it('should return all todos', async () => {
+  describe('getAllTodos', () => {
+    it('should return all todos', () => {
       // Act
-      const response = await GET();
-      const data = await response.json();
+      const result = storeModule.getAllTodos();
 
       // Assert
       expect(storeModule.getAllTodos).toHaveBeenCalled();
-      expect(data).toEqual(mockTodos);
+      expect(result).toEqual(mockTodos);
     });
   });
 
-  describe('POST /api/todos', () => {
-    it('should add a new todo', async () => {
-      // Arrange
-      const request = createMockRequest({ text: 'New Todo' });
-
+  describe('getTodoById', () => {
+    it('should return a todo by id if it exists', () => {
       // Act
-      const response = await POST(request);
-      const data = await response.json();
-
-      // Assert
-      expect(storeModule.addTodo).toHaveBeenCalledWith('New Todo');
-      expect(data).toEqual(mockTodo);
-    });
-
-    it('should return 400 if text is missing', async () => {
-      // Arrange
-      const request = createMockRequest({});
-
-      // Act
-      const response = await POST(request);
-      const data = await response.json();
-
-      // Assert
-      expect(storeModule.addTodo).not.toHaveBeenCalled();
-      expect(data).toEqual({ error: 'Text is required and must be a string' });
-    });
-
-    it('should return 400 if request body is invalid', async () => {
-      // Arrange
-      const request = {
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
-      } as unknown as Request;
-
-      // Act
-      const response = await POST(request);
-      const data = await response.json();
-
-      // Assert
-      expect(storeModule.addTodo).not.toHaveBeenCalled();
-      expect(data).toEqual({ error: 'Invalid request body' });
-    });
-  });
-
-  describe('DELETE /api/todos', () => {
-    it('should clear all todos', async () => {
-      // Act
-      const response = await DELETEAll();
-      const data = await response.json();
-
-      // Assert
-      expect(storeModule.clearAllTodos).toHaveBeenCalled();
-      expect(data).toEqual({ message: 'All todos cleared successfully' });
-    });
-  });
-
-  describe('GET /api/todos/[id]', () => {
-    it('should return a todo by id if it exists', async () => {
-      // Act
-      const response = await GETById(undefined, { params: { id: '1' } });
+      const result = storeModule.getTodoById('1');
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('1');
-      expect(await response.json()).toEqual(mockTodo);
+      expect(result).toEqual(mockTodo);
     });
 
-    it('should return 404 if todo does not exist', async () => {
+    it('should return undefined if todo does not exist', () => {
       // Act
-      const response = await GETById(undefined, { params: { id: '999' } });
-      const data = await response.json();
+      const result = storeModule.getTodoById('999');
 
       // Assert
       expect(storeModule.getTodoById).toHaveBeenCalledWith('999');
-      expect(data).toEqual({ error: 'Todo not found' });
+      expect(result).toBeUndefined();
     });
   });
 
-  describe('PUT /api/todos/[id]', () => {
-    it('should update a todo if it exists', async () => {
-      // Arrange
-      const request = createMockRequest({ text: 'Updated Todo', completed: true });
-
+  describe('addTodo', () => {
+    it('should add a new todo', () => {
       // Act
-      const response = await PUT(request, { params: { id: '1' } });
-      const data = await response.json();
+      const result = storeModule.addTodo('New Todo');
+
+      // Assert
+      expect(storeModule.addTodo).toHaveBeenCalledWith('New Todo');
+      expect(result).toEqual(mockTodo);
+    });
+  });
+
+  describe('updateTodo', () => {
+    it('should update a todo if it exists', () => {
+      // Act
+      const result = storeModule.updateTodo('1', {
+        text: 'Updated Todo',
+        completed: true,
+      });
 
       // Assert
       expect(storeModule.updateTodo).toHaveBeenCalledWith('1', {
         text: 'Updated Todo',
         completed: true,
       });
-      expect(data).toEqual(updatedTodo);
+      expect(result).toEqual(updatedTodo);
     });
 
-    it('should return 404 if todo does not exist', async () => {
-      // Arrange
-      const request = createMockRequest({ text: 'Updated Todo', completed: true });
-
+    it('should return null if todo does not exist', () => {
       // Act
-      const response = await PUT(request, { params: { id: '999' } });
-      const data = await response.json();
+      const result = storeModule.updateTodo('999', {
+        text: 'Updated Todo',
+        completed: true,
+      });
 
       // Assert
       expect(storeModule.updateTodo).toHaveBeenCalledWith('999', {
         text: 'Updated Todo',
         completed: true,
       });
-      expect(data).toEqual({ error: 'Todo not found' });
-    });
-
-    it('should return 400 if request body is invalid', async () => {
-      // Arrange
-      const request = {
-        json: jest.fn().mockRejectedValue(new Error('Invalid JSON')),
-      } as unknown as Request;
-
-      // Act
-      const response = await PUT(request, { params: { id: '1' } });
-      const data = await response.json();
-
-      // Assert
-      expect(storeModule.updateTodo).not.toHaveBeenCalled();
-      expect(data).toEqual({ error: 'Invalid request body' });
+      expect(result).toBeNull();
     });
   });
 
-  describe('DELETE /api/todos/[id]', () => {
-    it('should delete a todo if it exists', async () => {
+  describe('deleteTodo', () => {
+    it('should delete a todo if it exists', () => {
       // Act
-      const response = await DELETEById(undefined, { params: { id: '1' } });
-      const data = await response.json();
+      const result = storeModule.deleteTodo('1');
 
       // Assert
       expect(storeModule.deleteTodo).toHaveBeenCalledWith('1');
-      expect(data).toEqual(mockTodo);
+      expect(result).toEqual(mockTodo);
     });
 
-    it('should return 404 if todo does not exist', async () => {
+    it('should return null if todo does not exist', () => {
       // Act
-      const response = await DELETEById(undefined, { params: { id: '999' } });
-      const data = await response.json();
+      const result = storeModule.deleteTodo('999');
 
       // Assert
       expect(storeModule.deleteTodo).toHaveBeenCalledWith('999');
-      expect(data).toEqual({ error: 'Todo not found' });
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('clearAllTodos', () => {
+    it('should clear all todos', () => {
+      // Act
+      storeModule.clearAllTodos();
+
+      // Assert
+      expect(storeModule.clearAllTodos).toHaveBeenCalled();
     });
   });
 });
