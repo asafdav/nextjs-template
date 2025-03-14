@@ -1,0 +1,8 @@
+{
+  "name": "static-site",
+  "version": "1.0.0",
+  "description": "Simple static site for AWS Amplify",
+  "scripts": {
+    "build": "echo 'No build step required for static site'"
+  }
+} 
