@@ -6,6 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 /**
  * Properties for the InfrastructureStack
@@ -27,6 +28,12 @@ export interface InfrastructureStackProps extends cdk.StackProps {
    * @default 'main'
    */
   branch?: string;
+  
+  /**
+   * The name of the GitHub token secret in AWS Secrets Manager
+   * @default 'github-token'
+   */
+  githubTokenSecretName?: string;
 }
 
 /**
@@ -38,8 +45,9 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Set default branch if not provided
     const branch = props.branch || 'main';
+    const githubTokenSecretName = props.githubTokenSecretName || 'github-token';
 
-    // Extract repository information if URL is provided (for documentation only)
+    // Extract repository information if URL is provided
     let repoOwner: string | undefined;
     let repoName: string | undefined;
 
@@ -100,10 +108,38 @@ export class InfrastructureStack extends cdk.Stack {
       ],
     });
 
-    // Create an Amplify app without GitHub integration
-    // GitHub integration will be set up manually through the Amplify Console
+    // Set up GitHub integration if repository information is available
+    let sourceCodeProvider: amplify.ISourceCodeProvider | undefined;
+    
+    if (repoOwner && repoName) {
+      try {
+        // Import the GitHub token from Secrets Manager
+        const githubTokenSecret = secretsmanager.Secret.fromSecretNameV2(
+          this,
+          'GitHubToken',
+          githubTokenSecretName
+        );
+        
+        // Create the GitHub source code provider
+        sourceCodeProvider = new amplify.GitHubSourceCodeProvider({
+          oauthToken: cdk.SecretValue.secretsManager(githubTokenSecretName, { jsonField: 'token' }),
+          owner: repoOwner,
+          repository: repoName,
+        });
+        
+        console.log(`Setting up GitHub integration for ${repoOwner}/${repoName}`);
+      } catch (error) {
+        console.log(
+          `Failed to set up GitHub integration: ${error instanceof Error ? error.message : String(error)}`
+        );
+        console.log('Falling back to manual GitHub connection');
+      }
+    }
+
+    // Create an Amplify app with GitHub integration if available
     const amplifyApp = new amplify.App(this, 'TodoApp', {
       appName: `todo-app-${props.environment}`,
+      sourceCodeProvider,
       environmentVariables: {
         ENVIRONMENT: props.environment,
         DYNAMODB_TABLE: todoTable.tableName,
@@ -112,31 +148,6 @@ export class InfrastructureStack extends cdk.Stack {
         ...(repoName && { GITHUB_REPO: repoName }),
         ...(branch && { GITHUB_BRANCH: branch }),
       },
-      // Add GitHub source code provider if repository URL is provided
-      sourceCodeProvider: (() => {
-        // Only attempt to use GitHub source code provider if we have all required information
-        if (props.repositoryUrl && repoOwner && repoName) {
-          try {
-            return new amplify.GitHubSourceCodeProvider({
-              owner: repoOwner,
-              repository: repoName,
-              oauthToken: cdk.SecretValue.secretsManager('github-token', {
-                jsonField: 'token',
-              }),
-            });
-          } catch (error) {
-            // Log the error but continue without GitHub integration
-            console.log(
-              `Failed to create GitHub source code provider: ${error instanceof Error ? error.message : String(error)}`
-            );
-            console.log(
-              'Continuing without GitHub integration. You can connect your repository manually through the Amplify Console.'
-            );
-            return undefined;
-          }
-        }
-        return undefined;
-      })(),
       buildSpec: codebuild.BuildSpec.fromObjectToYaml({
         version: '1.0',
         frontend: {
@@ -173,6 +184,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Configure auto branch creation using the CfnApp class
     const cfnApp = amplifyApp.node.defaultChild as cdk.aws_amplify.CfnApp;
+    
     cfnApp.autoBranchCreationConfig = {
       enableAutoBuild: true,
       enablePullRequestPreview: props.environment !== 'prod',
@@ -182,7 +194,6 @@ export class InfrastructureStack extends cdk.Stack {
     cfnApp.enableBranchAutoDeletion = true;
 
     // Add a branch to the Amplify app
-    // This branch will be connected to GitHub manually through the Amplify Console
     const amplifyBranch = new amplify.Branch(this, 'Branch', {
       app: amplifyApp,
       branchName: branch,
@@ -275,39 +286,51 @@ export class InfrastructureStack extends cdk.Stack {
       description: 'The URL of the deployed Amplify app',
     });
 
-    // Output the Amplify Console URL for connecting to GitHub
+    // Output the Amplify Console URL
     new cdk.CfnOutput(this, 'AmplifyConsoleURL', {
       value: `https://${this.region}.console.aws.amazon.com/amplify/home?region=${this.region}#/${amplifyApp.appId}`,
-      description: 'URL to the Amplify Console for connecting to GitHub',
+      description: 'URL to the Amplify Console',
     });
 
-    // Output instructions for connecting to GitHub
-    new cdk.CfnOutput(this, 'GitHubConnectionInstructions', {
-      value: `
-To connect this Amplify app to GitHub (if not already connected):
-1. First, set up your GitHub token in AWS Secrets Manager:
-   ./scripts/setup-github-token.sh [aws-profile] <github-token>
+    // Output GitHub integration status
+    new cdk.CfnOutput(this, 'GitHubIntegrationStatus', {
+      value: sourceCodeProvider 
+        ? `GitHub integration set up automatically for ${repoOwner}/${repoName}`
+        : 'GitHub integration not set up automatically. See setup instructions below.',
+      description: 'Status of GitHub integration',
+    });
 
-2. If you encounter an error about "manually deployed branch still exists", delete all branches:
-   ./scripts/delete-amplify-branches.sh ${props.environment} [aws-profile]
+    // Output instructions for manual GitHub connection if automatic setup failed
+    if (!sourceCodeProvider) {
+      new cdk.CfnOutput(this, 'GitHubConnectionInstructions', {
+        value: `
+IMPORTANT: Automatic GitHub integration could not be set up.
+To manually connect your GitHub repository:
 
-3. Then, redeploy the infrastructure:
-   ./scripts/deploy.sh ${props.environment} ${branch} [aws-profile]
+1. Make sure you have a GitHub token stored in AWS Secrets Manager with name '${githubTokenSecretName}'
+   - Run: ./scripts/setup-github-token.sh [aws-profile] <github-token>
 
-4. If automatic connection fails, you can manually connect through the Amplify Console:
+2. Redeploy the infrastructure:
+   - Run: ./scripts/deploy.sh ${props.environment} ${branch} [aws-profile]
+
+Alternatively, you can connect manually through the Amplify Console:
+1. Open the Amplify Console:
    ${`https://${this.region}.console.aws.amazon.com/amplify/home?region=${this.region}#/${amplifyApp.appId}`}
-   - Click on "Connect branch"
-   - Choose GitHub as the repository provider
-   - Authorize AWS Amplify to access your GitHub account
-   - Select your repository (${repoOwner || 'owner'}/${repoName || 'repo'}) and branch (${branch})
-   - Click "Connect branch"
 
-5. If all else fails, you can delete the Amplify app and start fresh:
-   ./scripts/delete-amplify-app.sh ${props.environment} [aws-profile]
-   Then redeploy the infrastructure.
+2. Click on "Connect branch"
+
+3. Choose GitHub as the repository provider
+
+4. Authorize AWS Amplify to access your GitHub account
+   - If prompted, grant Amplify access to your repository
+
+5. Select your repository (${repoOwner || 'owner'}/${repoName || 'repo'}) and branch (${branch})
+
+6. Click "Connect branch"
 `,
-      description: 'Instructions for connecting to GitHub',
-    });
+        description: 'Instructions for connecting to GitHub',
+      });
+    }
 
     // Output the DynamoDB table name
     new cdk.CfnOutput(this, 'DynamoDBTableName', {
