@@ -14,6 +14,8 @@ const nextConfig = {
   // Disable API routes for static export
   // API routes are not supported in static exports
   // We'll use the static JSON files in the public directory instead
+  // Set trailingSlash to true for better compatibility with static hosting
+  trailingSlash: true,
 };
 
 module.exports = nextConfig;
