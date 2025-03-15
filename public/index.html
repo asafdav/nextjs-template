@@ -1,90 +1,91 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AWS Amplify Test</title>
-    <style>
-      body {
-        font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
-          'Open Sans', 'Helvetica Neue', sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 2rem;
-        line-height: 1.6;
-      }
-      h1 {
-        color: #0070f3;
-      }
-      .card {
-        border: 1px solid #eaeaea;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-top: 1.5rem;
-        background-color: #f9f9f9;
-      }
-      .success {
-        color: #0070f3;
-        font-weight: bold;
-      }
-      .timestamp {
-        color: #666;
-        font-size: 0.9rem;
-        margin-top: 1rem;
-      }
-    </style>
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Todo App - AWS Amplify Deployment</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .container {
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #4361ee;
+      margin-top: 0;
+    }
+    .success {
+      color: #2ecc71;
+      font-weight: bold;
+    }
+    .button {
+      display: inline-block;
+      background-color: #4361ee;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background-color: #3a56d4;
+    }
+    code {
+      background-color: #f1f1f1;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    ul {
+      margin-top: 10px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+  </style>
+  <script>
+    // Redirect to the actual app page
+    window.onload = function() {
+      // Small delay to show the page first
+      setTimeout(function() {
+        window.location.href = '/index/';
+      }, 1500);
+    };
+  </script>
+</head>
+<body>
+  <div class="container">
     <h1>AWS Amplify Deployment Test</h1>
+    <p class="success">✅ Static file serving is working correctly!</p>
+    <p>If you can see this page, the static file serving is working correctly. You will be redirected to the Todo app in a moment...</p>
+    <p>This is a simple static HTML file located at <code>/public/index.html</code> in the project.</p>
+    <a href="/index/" class="button">Go to Todo App Now</a>
+  </div>
+  
+  <div class="container">
+    <h2>About This Deployment</h2>
+    <p>This is a Next.js application deployed as a static site on AWS Amplify. The application includes:</p>
+    <ul>
+      <li>A Todo application with client-side data persistence</li>
+      <li>Static API endpoints for development compatibility</li>
+      <li>Debug information page</li>
+    </ul>
+    <p>Page loaded at: <span id="timestamp"></span></p>
+  </div>
 
-    <div class="card">
-      <p>If you can see this page, the static file serving is working correctly!</p>
-      <p class="success">✅ Static file serving is working</p>
-      <p>
-        This is a simple static HTML file located at <code>/public/index.html</code> in the project.
-      </p>
-      <p>Next, try accessing the following URLs to test different aspects of the deployment:</p>
-      <ul>
-        <li><a href="/test.html">Test page</a> - Another static HTML page</li>
-        <li><a href="/api/debug/data.json">API Debug data</a> - Static JSON file</li>
-      </ul>
-      <p class="timestamp">Page loaded at: <span id="load-time"></span></p>
-    </div>
-
-    <script>
-      // Set the load time
-      document.getElementById('load-time').textContent = new Date().toISOString();
-
-      // Log to console for debugging
-      console.log('Test page loaded at:', new Date().toISOString());
-      console.log('Page URL:', window.location.href);
-      console.log('User Agent:', navigator.userAgent);
-
-      // Fetch the debug data
-      fetch('/api/debug/data.json')
-        .then(response => response.json())
-        .then(data => {
-          console.log('Debug data:', data);
-          const debugDiv = document.createElement('div');
-          debugDiv.className = 'card';
-          debugDiv.innerHTML = `
-          <h2>Debug Data</h2>
-          <pre>${JSON.stringify(data, null, 2)}</pre>
-        `;
-          document.body.appendChild(debugDiv);
-        })
-        .catch(error => {
-          console.error('Error fetching debug data:', error);
-          const errorDiv = document.createElement('div');
-          errorDiv.className = 'card';
-          errorDiv.style.backgroundColor = '#ffebee';
-          errorDiv.innerHTML = `
-          <h2>Error Fetching Debug Data</h2>
-          <p>${error.message}</p>
-        `;
-          document.body.appendChild(errorDiv);
-        });
-    </script>
-  </body>
+  <script>
+    document.getElementById('timestamp').textContent = new Date().toISOString();
+  </script>
+</body>
 </html>
