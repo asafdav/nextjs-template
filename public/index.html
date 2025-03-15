@@ -54,38 +54,46 @@
       margin-bottom: 8px;
     }
   </style>
-  <script>
-    // Redirect to the actual app page
-    window.onload = function() {
-      // Small delay to show the page first
-      setTimeout(function() {
-        window.location.href = '/index/';
-      }, 1500);
-    };
-  </script>
 </head>
 <body>
   <div class="container">
     <h1>AWS Amplify Deployment Test</h1>
     <p class="success">✅ Static file serving is working correctly!</p>
-    <p>If you can see this page, the static file serving is working correctly. You will be redirected to the Todo app in a moment...</p>
+    <p>If you can see this page, the static file serving is working correctly!</p>
     <p>This is a simple static HTML file located at <code>/public/index.html</code> in the project.</p>
-    <a href="/index/" class="button">Go to Todo App Now</a>
-  </div>
-  
-  <div class="container">
-    <h2>About This Deployment</h2>
-    <p>This is a Next.js application deployed as a static site on AWS Amplify. The application includes:</p>
+    <p>Next, try accessing the following URLs to test different aspects of the deployment:</p>
     <ul>
-      <li>A Todo application with client-side data persistence</li>
-      <li>Static API endpoints for development compatibility</li>
-      <li>Debug information page</li>
+      <li><a href="/test.html">Test page</a> - Another static HTML page</li>
+      <li><a href="/api/debug/data.json">API Debug data</a> - Static JSON file</li>
     </ul>
     <p>Page loaded at: <span id="timestamp"></span></p>
   </div>
 
+  <div class="container">
+    <h2>Debug Data</h2>
+    <pre id="debug-data">Loading...</pre>
+  </div>
+
   <script>
+    // Set the load time
     document.getElementById('timestamp').textContent = new Date().toISOString();
+
+    // Log to console for debugging
+    console.log('Test page loaded at:', new Date().toISOString());
+    console.log('Page URL:', window.location.href);
+    console.log('User Agent:', navigator.userAgent);
+
+    // Fetch the debug data
+    fetch('/api/debug/data.json')
+      .then(response => response.json())
+      .then(data => {
+        console.log('Debug data:', data);
+        document.getElementById('debug-data').textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(error => {
+        console.error('Error fetching debug data:', error);
+        document.getElementById('debug-data').textContent = 'Error fetching debug data: ' + error.message;
+      });
   </script>
 </body>
 </html>

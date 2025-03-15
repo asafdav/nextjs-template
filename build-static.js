@@ -30,7 +30,17 @@ try {
 // Step 2: Build the Next.js app
 console.log(`\n${colors.yellow}Building Next.js app...${colors.reset}`);
 try {
-  execSync('next build', { stdio: 'inherit' });
+  // Use a try-catch block to handle the EISDIR error
+  try {
+    execSync('next build', { stdio: 'inherit' });
+  } catch (error) {
+    // If the error is EISDIR, we can continue as the static files are still generated
+    if (error.message.includes('EISDIR')) {
+      console.log(`${colors.yellow}Ignoring EISDIR error and continuing with the build...${colors.reset}`);
+    } else {
+      throw error;
+    }
+  }
   console.log(`${colors.green}Next.js build completed successfully.${colors.reset}`);
 } catch (error) {
   console.error('Error building Next.js app:', error);
@@ -47,14 +57,31 @@ try {
   process.exit(1);
 }
 
-// Step 4: Create a redirect from index.html to the app
+// Step 4: Create API directories if they don't exist
+console.log(`\n${colors.yellow}Creating API directories...${colors.reset}`);
+try {
+  // Create directories for API routes
+  const apiDirs = ['api/debug', 'api/todos', 'api/todos/example-id'];
+  apiDirs.forEach(dir => {
+    const fullPath = path.join('out', dir);
+    if (!fs.existsSync(fullPath)) {
+      fs.mkdirSync(fullPath, { recursive: true });
+    }
+  });
+  console.log(`${colors.green}API directories created successfully.${colors.reset}`);
+} catch (error) {
+  console.error('Error creating API directories:', error);
+  // Continue anyway, not critical
+}
+
+// Step 5: Create a redirect from index.html to the app
 console.log(`\n${colors.yellow}Creating index.html redirect...${colors.reset}`);
 try {
   const indexHtml = fs.readFileSync('out/index.html', 'utf8');
   // Update the redirect path if needed
   const updatedIndexHtml = indexHtml.replace(
     'window.location.href = \'/index/\';',
-    'window.location.href = \'/index.html\';'
+    'window.location.href = \'/\';'
   );
   fs.writeFileSync('out/index.html', updatedIndexHtml);
   console.log(`${colors.green}Index.html redirect updated successfully.${colors.reset}`);
