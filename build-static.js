@@ -59,6 +59,31 @@ if (!fs.existsSync(todosDir)) {
 }
 console.log(`${colors.green}API directories created successfully.${colors.reset}`);
 
+// Create static JSON files for API endpoints
+console.log(`${colors.cyan}Creating static JSON files for API endpoints...${colors.reset}`);
+
+// Create todos data.json
+const todosData = [
+  { id: '1', text: 'Learn Next.js', completed: true },
+  { id: '2', text: 'Build a Todo App', completed: true },
+  { id: '3', text: 'Deploy to AWS Amplify', completed: false }
+];
+fs.writeFileSync(path.join(todosDir, 'data.json'), JSON.stringify(todosData, null, 2));
+
+// Check if debug data.json exists, if not create it
+const debugDataPath = path.join(debugDir, 'data.json');
+if (!fs.existsSync(debugDataPath)) {
+  const debugData = {
+    timestamp: new Date().toISOString(),
+    environment: process.env.NEXT_PUBLIC_ENVIRONMENT || 'development',
+    staticExport: true,
+    message: 'This is a static JSON file created during the build process'
+  };
+  fs.writeFileSync(debugDataPath, JSON.stringify(debugData, null, 2));
+}
+
+console.log(`${colors.green}Static JSON files created successfully.${colors.reset}`);
+
 // Copy public files to out directory
 console.log(`${colors.cyan}Copying public files to out directory...${colors.reset}`);
 try {
