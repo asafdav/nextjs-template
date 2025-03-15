@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   // Enable static exports for Amplify hosting
   output: 'standalone',
 
+  // Add trailingSlash for better compatibility with Amplify hosting
+  trailingSlash: true,
+
   // Configure image domains if needed
   images: {
     domains: ['example.com'],

@@ -36,6 +36,12 @@ const Header: React.FC = () => {
           >
             Contact
           </Link>
+          <Link
+            href="/debug"
+            className="text-gray-700 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400"
+          >
+            Debug
+          </Link>
         </nav>
         <div className="md:hidden">
           <button className="text-gray-700 dark:text-gray-200 hover:text-blue-500 dark:hover:text-blue-400">

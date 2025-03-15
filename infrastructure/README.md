@@ -255,3 +255,112 @@ npx cdk destroy TodoApp-<environment> --profile your-profile-name
 ```
 
 **Note**: This will delete all resources created by the CDK stack. Data in DynamoDB tables and S3 buckets with deletion protection (in production) will be retained.
+
+## GitHub Integration with AWS Amplify
+
+This project uses **AWS CDK's GitHubSourceCodeProvider** to automatically connect your GitHub repository to Amplify. This approach offers several advantages:
+
+- **Fully automated setup**: No manual steps required in the Amplify Console
+- **Infrastructure as code**: GitHub integration is defined in your CDK code
+- **Reproducible deployments**: Consistent setup across environments
+- **Automatic branch detection**: New branches matching patterns are automatically detected
+- **Pull request previews**: Preview deployments for pull requests
+
+### GitHub App Migration
+
+AWS Amplify is migrating from OAuth-based GitHub integration to GitHub Apps. When you see the "Migrate to our GitHub app" prompt in the Amplify Console, you should proceed with the migration:
+
+1. Click the "Start migration" button in the Amplify Console
+2. Follow the prompts to install the AWS Amplify GitHub App
+3. Select the repositories you want to give Amplify access to
+4. Complete the authorization process
+
+Benefits of the GitHub App integration:
+
+- Requires fewer permissions than the OAuth integration
+- More granular control over which repositories Amplify can access
+- Improved security posture
+- Same functionality for branch detection and deployments
+
+This migration is required by AWS and does not affect your infrastructure code or deployment process.
+
+## Setup Instructions
+
+### 1. Store GitHub Token in AWS Secrets Manager
+
+Before deploying, you need to store your GitHub personal access token in AWS Secrets Manager:
+
+```bash
+./scripts/setup-github-token.sh [aws-profile] <github-token>
+```
+
+You need to create a GitHub personal access token with 'repo' and 'admin:repo_hook' permissions.
+Visit https://github.com/settings/tokens to create one.
+
+### 2. Deploy the Infrastructure
+
+```bash
+# Deploy the infrastructure for the dev environment
+./scripts/deploy.sh dev main [aws-profile]
+```
+
+This will:
+
+1. Deploy the infrastructure for the specified environment
+2. Create an Amplify app connected to your GitHub repository using the token from Secrets Manager
+3. Set up auto branch creation and other configurations
+
+### 3. Auto Branch Creation
+
+Once deployed, the auto branch creation settings will take effect. Branches matching these patterns will be automatically detected:
+
+- `main`
+- `dev`
+- `feature/*`
+- `release/*`
+
+## Troubleshooting
+
+### GitHub Integration Failed
+
+If the GitHub integration fails to set up automatically:
+
+1. Check that your GitHub token is correctly stored in AWS Secrets Manager
+
+   ```bash
+   aws secretsmanager get-secret-value --secret-id github-token --query SecretString --output text
+   ```
+
+2. Verify that the token has the necessary permissions (repo, admin:repo_hook)
+
+3. Check that your repository URL is correctly specified in the deployment command
+
+   ```bash
+   ./scripts/deploy.sh dev main [aws-profile] --repository-url=https://github.com/owner/repo
+   ```
+
+4. If issues persist, you can fall back to manual connection through the Amplify Console
+   ```bash
+   ./scripts/connect-github.sh dev [aws-profile]
+   ```
+
+### Branch Not Detected
+
+If a new branch is not automatically detected:
+
+1. Verify the branch name matches one of the patterns in `autoBranchCreationConfig`
+2. Check that the GitHub repository is properly connected in the Amplify Console
+3. Try manually connecting the branch through the Amplify Console
+
+## Scripts
+
+- `deploy.sh`: Deploy the infrastructure
+- `connect-github.sh`: Open the Amplify Console for connecting GitHub
+- `delete-amplify-app.sh`: Delete the Amplify app (use with caution)
+- `delete-amplify-branches.sh`: Delete all branches in the Amplify app
+
+## Important Notes
+
+- The `setup-github-token.sh` script is **not needed** for the native GitHub integration
+- The CDK code does not use `GitHubSourceCodeProvider` - connection is done through the Amplify Console
+- Auto branch creation settings are applied in the CDK but only take effect after connecting GitHub

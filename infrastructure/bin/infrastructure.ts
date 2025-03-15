@@ -15,24 +15,33 @@ const repositoryUrl =
 // Get branch from context or default to 'main'
 const branch = app.node.tryGetContext('branch') || 'main';
 
+// Get GitHub token secret name from context or use default
+const githubTokenSecretName = app.node.tryGetContext('github-token-secret') || 'github-token';
+
+// Get AWS account and region from context or environment variables
+const account = app.node.tryGetContext('aws-account') || process.env.CDK_DEFAULT_ACCOUNT;
+const region = app.node.tryGetContext('aws-region') || process.env.CDK_DEFAULT_REGION;
+
+if (!account || !region) {
+  throw new Error(
+    'AWS account and region must be provided via context (--context aws-account=XXXX --context aws-region=XXXX) or environment variables (CDK_DEFAULT_ACCOUNT, CDK_DEFAULT_REGION)'
+  );
+}
+
+console.log(`Deploying to AWS account ${account} in region ${region}`);
+console.log(`Environment: ${environment}, Branch: ${branch}`);
+console.log(`Repository URL: ${repositoryUrl}`);
+
 // Create the stack
 new InfrastructureStack(app, `TodoApp-${environment}`, {
   environment,
   repositoryUrl,
   branch,
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
-
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
-
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+  githubTokenSecretName,
+  env: {
+    account,
+    region,
+  },
 });
 
 app.synth();

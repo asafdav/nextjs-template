@@ -176,7 +176,7 @@ describe('localStorageService', () => {
       // Get the registered handler and call it directly
       const handler = mockEventHandlers['storage'];
       const serializedTodos = JSON.stringify(mockTodos);
-      handler({ key: 'todos', newValue: serializedTodos });
+      handler({ key: 'todos', newValue: serializedTodos } as StorageEvent);
 
       // Verify callback was called with parsed todos
       expect(callback).toHaveBeenCalled();
@@ -190,7 +190,7 @@ describe('localStorageService', () => {
 
       // Get the registered handler and call it with a different key
       const handler = mockEventHandlers['storage'];
-      handler({ key: 'other-key', newValue: JSON.stringify(mockTodos) });
+      handler({ key: 'other-key', newValue: JSON.stringify(mockTodos) } as StorageEvent);
 
       expect(callback).not.toHaveBeenCalled();
     });
@@ -204,7 +204,7 @@ describe('localStorageService', () => {
 
       // Get the registered handler and call it directly
       const handler = mockEventHandlers['todos-updated'];
-      handler({ detail: mockTodos });
+      handler({ detail: mockTodos } as CustomEvent<typeof mockTodos>);
 
       expect(callback).toHaveBeenCalledWith(mockTodos);
     });
