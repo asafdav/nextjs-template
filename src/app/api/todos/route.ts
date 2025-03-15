@@ -2,9 +2,25 @@ import { NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import * as dynamodbService from '@/services/dynamodbService';
 import { Todo } from '@/types/todo';
+import fs from 'fs';
+import path from 'path';
+
+// Add these exports to make the route compatible with static export
+export const dynamic = 'force-static';
+export const revalidate = false;
 
 export async function GET() {
   try {
+    // For static export, return empty todos array
+    if (process.env.NODE_ENV === 'production') {
+      // Create a static JSON file for the todos API
+      const staticTodos: Todo[] = [];
+      const outDir = path.join(process.cwd(), 'out', 'api', 'todos');
+      fs.mkdirSync(outDir, { recursive: true });
+      fs.writeFileSync(path.join(outDir, 'index.json'), JSON.stringify(staticTodos));
+      return NextResponse.json(staticTodos);
+    }
+
     const todos = await dynamodbService.getAllTodos();
     return NextResponse.json(todos);
   } catch (error) {
