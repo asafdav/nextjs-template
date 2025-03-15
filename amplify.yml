@@ -7,8 +7,6 @@ frontend:
     build:
       commands:
         - npm run build -- --no-lint
-        - echo "Copying public files to out directory"
-        - cp -r public/* out/ || true
   artifacts:
     baseDirectory: out
     files:
