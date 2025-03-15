@@ -4,7 +4,7 @@ import path from 'path';
 
 export async function GET() {
   console.log('Debug API endpoint called at:', new Date().toISOString());
-  
+
   // Collect environment variables (only public ones)
   const envVars = {
     NODE_ENV: process.env.NODE_ENV,
@@ -13,9 +13,9 @@ export async function GET() {
     TODO_TABLE_NAME: process.env.TODO_TABLE_NAME,
     ASSETS_BUCKET: process.env.ASSETS_BUCKET,
   };
-  
+
   console.log('Environment variables:', envVars);
-  
+
   // Collect server information
   const serverInfo = {
     timestamp: new Date().toISOString(),
@@ -23,9 +23,9 @@ export async function GET() {
     platform: process.platform,
     arch: process.arch,
   };
-  
+
   console.log('Server information:', serverInfo);
-  
+
   // Create the response data
   const responseData = {
     status: 'ok',
@@ -33,7 +33,7 @@ export async function GET() {
     environment: envVars,
     server: serverInfo,
   };
-  
+
   // For static export, write the data to a JSON file
   if (process.env.NODE_ENV === 'production') {
     try {
@@ -45,7 +45,7 @@ export async function GET() {
       console.error('Error writing debug data to file:', err);
     }
   }
-  
+
   // Return the response
   return NextResponse.json(responseData);
-} 
+}

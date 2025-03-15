@@ -276,6 +276,7 @@ AWS Amplify is migrating from OAuth-based GitHub integration to GitHub Apps. Whe
 4. Complete the authorization process
 
 Benefits of the GitHub App integration:
+
 - Requires fewer permissions than the OAuth integration
 - More granular control over which repositories Amplify can access
 - Improved security posture
@@ -304,6 +305,7 @@ Visit https://github.com/settings/tokens to create one.
 ```
 
 This will:
+
 1. Deploy the infrastructure for the specified environment
 2. Create an Amplify app connected to your GitHub repository using the token from Secrets Manager
 3. Set up auto branch creation and other configurations
@@ -311,6 +313,7 @@ This will:
 ### 3. Auto Branch Creation
 
 Once deployed, the auto branch creation settings will take effect. Branches matching these patterns will be automatically detected:
+
 - `main`
 - `dev`
 - `feature/*`
@@ -323,6 +326,7 @@ Once deployed, the auto branch creation settings will take effect. Branches matc
 If the GitHub integration fails to set up automatically:
 
 1. Check that your GitHub token is correctly stored in AWS Secrets Manager
+
    ```bash
    aws secretsmanager get-secret-value --secret-id github-token --query SecretString --output text
    ```
@@ -330,6 +334,7 @@ If the GitHub integration fails to set up automatically:
 2. Verify that the token has the necessary permissions (repo, admin:repo_hook)
 
 3. Check that your repository URL is correctly specified in the deployment command
+
    ```bash
    ./scripts/deploy.sh dev main [aws-profile] --repository-url=https://github.com/owner/repo
    ```

@@ -28,7 +28,7 @@ export interface InfrastructureStackProps extends cdk.StackProps {
    * @default 'main'
    */
   branch?: string;
-  
+
   /**
    * The name of the GitHub token secret in AWS Secrets Manager
    * @default 'github-token'
@@ -110,7 +110,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Set up GitHub integration if repository information is available
     let sourceCodeProvider: amplify.ISourceCodeProvider | undefined;
-    
+
     if (repoOwner && repoName) {
       try {
         // Import the GitHub token from Secrets Manager
@@ -119,14 +119,14 @@ export class InfrastructureStack extends cdk.Stack {
           'GitHubToken',
           githubTokenSecretName
         );
-        
+
         // Create the GitHub source code provider
         sourceCodeProvider = new amplify.GitHubSourceCodeProvider({
           oauthToken: cdk.SecretValue.secretsManager(githubTokenSecretName, { jsonField: 'token' }),
           owner: repoOwner,
           repository: repoName,
         });
-        
+
         console.log(`Setting up GitHub integration for ${repoOwner}/${repoName}`);
       } catch (error) {
         console.log(
@@ -194,7 +194,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Configure auto branch creation using the CfnApp class
     const cfnApp = amplifyApp.node.defaultChild as cdk.aws_amplify.CfnApp;
-    
+
     cfnApp.autoBranchCreationConfig = {
       enableAutoBuild: true,
       enablePullRequestPreview: props.environment !== 'prod',
@@ -304,7 +304,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     // Output GitHub integration status
     new cdk.CfnOutput(this, 'GitHubIntegrationStatus', {
-      value: sourceCodeProvider 
+      value: sourceCodeProvider
         ? `GitHub integration set up automatically for ${repoOwner}/${repoName}`
         : 'GitHub integration not set up automatically. See setup instructions below.',
       description: 'Status of GitHub integration',

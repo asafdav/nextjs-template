@@ -16,4 +16,4 @@ const nextConfig = {
   // We'll use the static JSON files in the public directory instead
 };
 
-module.exports = nextConfig; 
+module.exports = nextConfig;

@@ -38,9 +38,9 @@ new InfrastructureStack(app, `TodoApp-${environment}`, {
   repositoryUrl,
   branch,
   githubTokenSecretName,
-  env: { 
-    account, 
-    region 
+  env: {
+    account,
+    region,
   },
 });
 

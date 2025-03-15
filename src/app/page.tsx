@@ -25,10 +25,10 @@ export default function Home() {
         <div className="w-full max-w-4xl mb-12">
           <Todo />
         </div>
-        
+
         <div className="mt-8">
-          <Link 
-            href="/debug" 
+          <Link
+            href="/debug"
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             View Debug Information
