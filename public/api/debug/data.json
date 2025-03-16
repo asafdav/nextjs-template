@@ -1,12 +1,12 @@
 {
   "status": "ok",
-  "message": "Static debug information",
+  "message": "Debug information (static file)",
   "environment": {
     "NODE_ENV": "production",
     "NEXT_PUBLIC_ENVIRONMENT": "development"
   },
   "server": {
-    "timestamp": "2025-03-14T17:45:00.000Z",
-    "note": "This is a static file fallback for the API endpoint"
+    "timestamp": "2025-03-15T20:38:30.112Z",
+    "platform": "static-export"
   }
 }

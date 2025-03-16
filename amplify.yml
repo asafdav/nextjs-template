@@ -8,7 +8,7 @@ frontend:
       commands:
         - npm run build -- --no-lint
   artifacts:
-    baseDirectory: .next
+    baseDirectory: out
     files:
       - '**/*'
   cache:

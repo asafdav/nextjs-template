@@ -54,9 +54,9 @@ export default function DebugPage() {
               const typedNextData = nextData as {
                 props?: {
                   pageProps?: {
-                    ENV?: Record<string, string>
-                  }
-                }
+                    ENV?: Record<string, string>;
+                  };
+                };
               };
               if (typedNextData.props?.pageProps?.ENV) {
                 Object.assign(vars, typedNextData.props.pageProps.ENV);
