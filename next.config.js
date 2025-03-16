@@ -1,33 +1,53 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Change output to export for static site generation
+  // Output configuration for static site generation
   output: 'export',
+  
+  // Add trailingSlash for better compatibility with Amplify hosting
+  trailingSlash: true,
+  
   // Disable image optimization since it's not supported with export
   images: {
     unoptimized: true,
+    // Keep domains configuration from TS file for development mode
+    domains: ['example.com'],
   },
-  // Add environment variables that should be available to the client
+  
+  // Combine environment variables from both files
   env: {
     NEXT_PUBLIC_ENVIRONMENT: process.env.ENVIRONMENT || 'development',
+    AMPLIFY_REGION: process.env.REGION || 'us-east-1',
   },
-  // Disable API routes for static export
-  // API routes are not supported in static exports
-  // We'll use the static JSON files in the public directory instead
-  // Set trailingSlash to true for better compatibility with static hosting
-  trailingSlash: true,
+  
   // Ensure the app is exported to the correct directory structure
-  // This is important for AWS Amplify static hosting
   distDir: '.next',
+  
   // Disable the build ID to ensure consistent file names
   generateBuildId: () => 'build',
+  
   // Ensure the app page is exported as index.html in the root
-  // This is crucial for AWS Amplify to serve the app correctly
   exportPathMap: async function () {
     return {
       '/': { page: '/' },
       '/index': { page: '/' },
     };
+  },
+  
+  // TypeScript configuration from TS file
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  
+  // Exclude specific directories from being processed by webpack
+  // This was in the TS file and is useful to keep
+  webpack: (config, { isServer }) => {
+    // Add infrastructure to the list of excluded directories
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: '**/infrastructure/**',
+    };
+    return config;
   },
 };
 
