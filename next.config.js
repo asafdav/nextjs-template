@@ -21,6 +21,14 @@ const nextConfig = {
   distDir: '.next',
   // Disable the build ID to ensure consistent file names
   generateBuildId: () => 'build',
+  // Ensure the app page is exported as index.html in the root
+  // This is crucial for AWS Amplify to serve the app correctly
+  exportPathMap: async function () {
+    return {
+      '/': { page: '/' },
+      '/index': { page: '/' },
+    };
+  },
 };
 
 module.exports = nextConfig;
