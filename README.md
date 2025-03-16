@@ -236,3 +236,13 @@ This URL is also provided in the CloudFormation outputs after deployment.
 ## Documentation
 
 Additional documentation is available in the `docs`
+
+## Configuration
+
+This project uses a single Next.js configuration file (`next.config.js`) optimized for static site generation with AWS Amplify hosting.
+
+Key configuration features:
+- Static export with `output: 'export'`
+- Trailing slashes for better compatibility with Amplify hosting
+- Unoptimized images (required for static export)
+- Environment variables for both development and production
