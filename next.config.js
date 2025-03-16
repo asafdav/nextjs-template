@@ -26,13 +26,8 @@ const nextConfig = {
   // Disable the build ID to ensure consistent file names
   generateBuildId: () => 'build',
   
-  // Ensure the app page is exported as index.html in the root
-  exportPathMap: async function () {
-    return {
-      '/': { page: '/' },
-      '/index': { page: '/' },
-    };
-  },
+  // Note: exportPathMap is removed as it's not compatible with the App Router
+  // For App Router, use generateStaticParams() in your route components instead
   
   // TypeScript configuration from TS file
   typescript: {
