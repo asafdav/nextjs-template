@@ -242,6 +242,7 @@ Additional documentation is available in the `docs`
 This project uses a single Next.js configuration file (`next.config.js`) optimized for static site generation with AWS Amplify hosting.
 
 Key configuration features:
+
 - Static export with `output: 'export'`
 - Trailing slashes for better compatibility with Amplify hosting
 - Unoptimized images (required for static export)

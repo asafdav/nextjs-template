@@ -28,7 +28,7 @@ export const getTodos = async (): Promise<Todo[]> => {
     if (isStaticExport()) {
       return localStorageService.getTodos();
     }
-    
+
     const response = await fetch(API_URL);
     return handleResponse(response);
   } catch (error) {
@@ -53,7 +53,7 @@ export const addTodo = async (text: string): Promise<Todo> => {
       localStorageService.saveTodos([...todos, newTodo]);
       return newTodo;
     }
-    
+
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
@@ -75,17 +75,17 @@ export const updateTodo = async (id: string, updates: Partial<Todo>): Promise<To
     if (isStaticExport()) {
       const todos = localStorageService.getTodos();
       const todoIndex = todos.findIndex(todo => todo.id === id);
-      
+
       if (todoIndex === -1) {
         throw new Error('Todo not found');
       }
-      
+
       const updatedTodo = { ...todos[todoIndex], ...updates };
       todos[todoIndex] = updatedTodo;
       localStorageService.saveTodos(todos);
       return updatedTodo;
     }
-    
+
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'PUT',
       headers: {
@@ -107,15 +107,15 @@ export const deleteTodo = async (id: string): Promise<Todo> => {
     if (isStaticExport()) {
       const todos = localStorageService.getTodos();
       const todoToDelete = todos.find(todo => todo.id === id);
-      
+
       if (!todoToDelete) {
         throw new Error('Todo not found');
       }
-      
+
       localStorageService.saveTodos(todos.filter(todo => todo.id !== id));
       return todoToDelete;
     }
-    
+
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
     });
@@ -134,7 +134,7 @@ export const clearAllTodos = async (): Promise<void> => {
       localStorageService.clearTodos();
       return;
     }
-    
+
     const response = await fetch(API_URL, {
       method: 'DELETE',
     });

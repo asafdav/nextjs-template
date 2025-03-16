@@ -9,7 +9,7 @@ const colors = {
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   red: '\x1b[31m',
-  cyan: '\x1b[36m'
+  cyan: '\x1b[36m',
 };
 
 console.log(`${colors.bright}Starting static build process...${colors.reset}`);
@@ -31,7 +31,10 @@ try {
   buildSucceeded = true;
 } catch (error) {
   // Check if it's the EISDIR error which is expected when exporting API routes
-  if (error.message && (error.message.includes('EISDIR') || error.message.includes('illegal operation on a directory'))) {
+  if (
+    error.message &&
+    (error.message.includes('EISDIR') || error.message.includes('illegal operation on a directory'))
+  ) {
     console.log(`${colors.yellow}Ignoring expected EISDIR error during build...${colors.reset}`);
     buildSucceeded = true; // Consider the build successful despite the EISDIR error
   } else {
@@ -66,7 +69,7 @@ console.log(`${colors.cyan}Creating static JSON files for API endpoints...${colo
 const todosData = [
   { id: '1', text: 'Learn Next.js', completed: true },
   { id: '2', text: 'Build a Todo App', completed: true },
-  { id: '3', text: 'Deploy to AWS Amplify', completed: false }
+  { id: '3', text: 'Deploy to AWS Amplify', completed: false },
 ];
 fs.writeFileSync(path.join(todosDir, 'data.json'), JSON.stringify(todosData, null, 2));
 
@@ -77,7 +80,7 @@ if (!fs.existsSync(debugDataPath)) {
     timestamp: new Date().toISOString(),
     environment: process.env.NEXT_PUBLIC_ENVIRONMENT || 'development',
     staticExport: true,
-    message: 'This is a static JSON file created during the build process'
+    message: 'This is a static JSON file created during the build process',
   };
   fs.writeFileSync(debugDataPath, JSON.stringify(debugData, null, 2));
 }
@@ -104,7 +107,7 @@ try {
     if (file !== 'index.html') {
       const sourcePath = path.join('public', file);
       const destPath = path.join('out', file);
-      
+
       if (fs.statSync(sourcePath).isDirectory()) {
         // If it's a directory, use recursive copy
         execSync(`cp -r "${sourcePath}" "${destPath}"`, { stdio: 'inherit' });
@@ -116,7 +119,10 @@ try {
   }
   console.log(`${colors.green}Public files copied successfully.${colors.reset}`);
 } catch (error) {
-  console.warn(`${colors.yellow}Warning: Some public files may not have been copied:${colors.reset}`, error.message);
+  console.warn(
+    `${colors.yellow}Warning: Some public files may not have been copied:${colors.reset}`,
+    error.message
+  );
 }
 
 // Create a redirect from landing.html to the app
@@ -124,17 +130,20 @@ console.log(`${colors.cyan}Creating redirect from landing page to app...${colors
 if (fs.existsSync(outLandingPath)) {
   try {
     let landingHtml = fs.readFileSync(outLandingPath, 'utf8');
-    
+
     // Add a link to the Todo app
     landingHtml = landingHtml.replace(
       '<ul>',
       '<ul>\n      <li><a href="/" style="font-weight: bold; color: #e74c3c;">Todo App</a> - The main Todo application</li>'
     );
-    
+
     fs.writeFileSync(outLandingPath, landingHtml);
     console.log(`${colors.green}Added Todo app link to landing page${colors.reset}`);
   } catch (error) {
-    console.warn(`${colors.yellow}Warning: Could not update landing.html:${colors.reset}`, error.message);
+    console.warn(
+      `${colors.yellow}Warning: Could not update landing.html:${colors.reset}`,
+      error.message
+    );
   }
 }
 
@@ -142,7 +151,7 @@ if (fs.existsSync(outLandingPath)) {
 const outIndexPath = path.join('out', 'index.html');
 if (!fs.existsSync(outIndexPath) || fs.statSync(outIndexPath).size < 100) {
   console.log(`${colors.yellow}Creating a new index.html with the Todo app...${colors.reset}`);
-  
+
   // Create a simple HTML file that loads the Todo app
   const todoAppHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -389,6 +398,10 @@ if (!fs.existsSync(outIndexPath) || fs.statSync(outIndexPath).size < 100) {
 if (buildSucceeded) {
   console.log(`${colors.bright}${colors.green}Static build completed successfully!${colors.reset}`);
 } else {
-  console.log(`${colors.bright}${colors.yellow}Static build completed with warnings.${colors.reset}`);
+  console.log(
+    `${colors.bright}${colors.yellow}Static build completed with warnings.${colors.reset}`
+  );
 }
-console.log(`${colors.cyan}Your static site is available in the ${colors.bright}out${colors.reset}${colors.cyan} directory.${colors.reset}`); 
+console.log(
+  `${colors.cyan}Your static site is available in the ${colors.bright}out${colors.reset}${colors.cyan} directory.${colors.reset}`
+);

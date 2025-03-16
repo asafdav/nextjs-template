@@ -1,99 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todo App - AWS Amplify Deployment</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      line-height: 1.6;
-      color: #333;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .container {
-      background-color: #f9f9f9;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #4361ee;
-      margin-top: 0;
-    }
-    .success {
-      color: #2ecc71;
-      font-weight: bold;
-    }
-    .button {
-      display: inline-block;
-      background-color: #4361ee;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .button:hover {
-      background-color: #3a56d4;
-    }
-    code {
-      background-color: #f1f1f1;
-      padding: 2px 4px;
-      border-radius: 4px;
-      font-family: monospace;
-    }
-    ul {
-      margin-top: 10px;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>AWS Amplify Deployment Test</h1>
-    <p class="success">✅ Static file serving is working correctly!</p>
-    <p>If you can see this page, the static file serving is working correctly!</p>
-    <p>This is a simple static HTML file located at <code>/public/index.html</code> in the project.</p>
-    <p>Next, try accessing the following URLs to test different aspects of the deployment:</p>
-    <ul>
-      <li><a href="/test.html">Test page</a> - Another static HTML page</li>
-      <li><a href="/api/debug/data.json">API Debug data</a> - Static JSON file</li>
-    </ul>
-    <p>Page loaded at: <span id="timestamp"></span></p>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todo App - AWS Amplify Deployment</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+          'Open Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .container {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      h1 {
+        color: #4361ee;
+        margin-top: 0;
+      }
+      .success {
+        color: #2ecc71;
+        font-weight: bold;
+      }
+      .button {
+        display: inline-block;
+        background-color: #4361ee;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      .button:hover {
+        background-color: #3a56d4;
+      }
+      code {
+        background-color: #f1f1f1;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      ul {
+        margin-top: 10px;
+      }
+      li {
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>AWS Amplify Deployment Test</h1>
+      <p class="success">✅ Static file serving is working correctly!</p>
+      <p>If you can see this page, the static file serving is working correctly!</p>
+      <p>
+        This is a simple static HTML file located at <code>/public/index.html</code> in the project.
+      </p>
+      <p>Next, try accessing the following URLs to test different aspects of the deployment:</p>
+      <ul>
+        <li><a href="/test.html">Test page</a> - Another static HTML page</li>
+        <li><a href="/api/debug/data.json">API Debug data</a> - Static JSON file</li>
+      </ul>
+      <p>Page loaded at: <span id="timestamp"></span></p>
+    </div>
 
-  <div class="container">
-    <h2>Debug Data</h2>
-    <pre id="debug-data">Loading...</pre>
-  </div>
+    <div class="container">
+      <h2>Debug Data</h2>
+      <pre id="debug-data">Loading...</pre>
+    </div>
 
-  <script>
-    // Set the load time
-    document.getElementById('timestamp').textContent = new Date().toISOString();
+    <script>
+      // Set the load time
+      document.getElementById('timestamp').textContent = new Date().toISOString();
 
-    // Log to console for debugging
-    console.log('Test page loaded at:', new Date().toISOString());
-    console.log('Page URL:', window.location.href);
-    console.log('User Agent:', navigator.userAgent);
+      // Log to console for debugging
+      console.log('Test page loaded at:', new Date().toISOString());
+      console.log('Page URL:', window.location.href);
+      console.log('User Agent:', navigator.userAgent);
 
-    // Fetch the debug data
-    fetch('/api/debug/data.json')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Debug data:', data);
-        document.getElementById('debug-data').textContent = JSON.stringify(data, null, 2);
-      })
-      .catch(error => {
-        console.error('Error fetching debug data:', error);
-        document.getElementById('debug-data').textContent = 'Error fetching debug data: ' + error.message;
-      });
-  </script>
-</body>
+      // Fetch the debug data
+      fetch('/api/debug/data.json')
+        .then(response => response.json())
+        .then(data => {
+          console.log('Debug data:', data);
+          document.getElementById('debug-data').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          console.error('Error fetching debug data:', error);
+          document.getElementById('debug-data').textContent =
+            'Error fetching debug data: ' + error.message;
+        });
+    </script>
+  </body>
 </html>

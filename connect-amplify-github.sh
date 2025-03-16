@@ -5,7 +5,7 @@
 
 # Configuration
 APP_ID="d2tj903phht9yk"
-BRANCH_NAME="main"
+BRANCH_NAME="fix/todo-app-static-export"
 REGION="us-east-1"
 AWS_PROFILE="vim-ai-admin"
 
@@ -28,8 +28,8 @@ echo "=== Instructions for connecting GitHub ==="
 echo "1. In the AWS Amplify Console, click 'Connect branch'"
 echo "2. Choose GitHub as the repository provider"
 echo "3. Authorize AWS Amplify to access your GitHub account if prompted"
-echo "4. Select the 'amplify-static-site' repository"
-echo "5. Select 'main' as the branch"
+echo "4. Select the 'nextjs-template' repository"
+echo "5. Select 'fix/todo-app-static-export' as the branch"
 echo "6. Click 'Connect branch'"
 echo ""
 echo "After connecting, Amplify will automatically detect changes to your repository"
@@ -47,4 +47,4 @@ else
 fi
 
 echo "Once connected, your static site will be available at:"
-echo "https://main.$APP_ID.amplifyapp.com" 
+echo "https://$BRANCH_NAME.$APP_ID.amplifyapp.com" 
